@@ -1,0 +1,18 @@
+services:
+  clawmetry:
+    image: ghcr.io/stritti/clawmetry-docker:latest
+    ports:
+      # Map host port 8900 to container port 8900 (clawmetry web UI)
+      - "8900:8900"
+    volumes:
+      # Mount the local OpenClaw workspace so the dashboard can read logs,
+      # sessions, memory files, and metrics.
+      - ~/.openclaw:/root/.openclaw
+    environment:
+      # Optional: explicitly set the OpenClaw data directory
+      # OPENCLAW_DATA_DIR: /root/.openclaw
+      # Optional: show your name in the Flow tab
+      # OPENCLAW_USER: "Your Name"
+      # Optional: Mission Control URL
+      # MC_URL: "https://your-mission-control"
+    restart: unless-stopped
