@@ -1,8 +1,8 @@
 # clawmetry-docker
 
-Docker Image for [clawmetry](https://clawmetry.com/) — real-time observability dashboard for [OpenClaw](https://github.com/openclaw/openclaw) AI agents.
+Docker Image for [ClawMetry](https://clawmetry.com/) — real-time observability dashboard for [OpenClaw](https://github.com/openclaw/openclaw) AI agents.
 
-The image is built automatically from the latest [clawmetry PyPI release](https://pypi.org/project/clawmetry/) and published to both [Docker Hub](https://hub.docker.com/r/stritti/clawmetry) and the [GitHub Container Registry](https://github.com/stritti/clawmetry-docker/pkgs/container/clawmetry-docker).
+The image is built automatically from the latest [ClawMetry PyPI release](https://pypi.org/project/clawmetry/) and published to both [Docker Hub](https://hub.docker.com/r/stritti/clawmetry) and the [GitHub Container Registry](https://github.com/stritti/clawmetry-docker/pkgs/container/clawmetry-docker).
 
 ## Usage
 
@@ -22,7 +22,7 @@ Then open **http://localhost:8900** in your browser.
 
 ### Mount your OpenClaw data directory (recommended)
 
-Clawmetry auto-detects the OpenClaw workspace at `~/.openclaw` (= `/root/.openclaw` inside the container).
+ClawMetry auto-detects the OpenClaw workspace at `~/.openclaw` (= `/root/.openclaw` inside the container).
 Mount your host workspace to that path so the dashboard can read logs, sessions, memory files, and metrics:
 
 ```bash
@@ -79,9 +79,13 @@ Uncomment the `environment` entries to customize the instance further:
 
 | Variable | Description |
 |---|---|
-| `OPENCLAW_DATA_DIR` | Explicit path to the OpenClaw data directory inside the container |
+| `OPENCLAW_HOME` | Path to the agent workspace directory |
+| `OPENCLAW_DATA_DIR` | OpenClaw data dir (auto-sets workspace, sessions, crons) |
+| `OPENCLAW_LOG_DIR` | Directory containing agent log files |
+| `OPENCLAW_SESSIONS_DIR` | Directory containing session `.jsonl` files |
 | `OPENCLAW_USER` | Your name shown in the Flow tab |
 | `MC_URL` | Mission Control URL (disabled by default) |
+| `CLAWMETRY_FLEET_KEY` | API key for multi-node fleet authentication |
 
 Full `docker-compose.yml`:
 

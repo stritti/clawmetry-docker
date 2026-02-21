@@ -2,7 +2,7 @@
 
 ## Quickstart
 
-Pull and run the latest image in a single command:
+Pull and run the latest [ClawMetry](https://clawmetry.com/) image in a single command:
 
 ```bash
 docker run -p 8900:8900 stritti/clawmetry:latest
@@ -12,7 +12,7 @@ Then open **http://localhost:8900** in your browser.
 
 ## Mount your OpenClaw workspace (recommended)
 
-Clawmetry auto-detects the OpenClaw workspace at `~/.openclaw` (`/root/.openclaw` inside the container).
+[ClawMetry](https://clawmetry.com/) auto-detects the OpenClaw workspace at `~/.openclaw` (`/root/.openclaw` inside the container).
 Mount your host workspace so the dashboard can read logs, sessions, memory files, and metrics:
 
 ```bash

@@ -9,7 +9,7 @@ docker compose up -d
 
 Then open **http://localhost:8900** in your browser.
 
-The file mounts your local `~/.openclaw` workspace into the container so the dashboard
+The file mounts your local `~/.openclaw` workspace into the container so the [ClawMetry](https://clawmetry.com/) dashboard
 can read logs, sessions, memory files, and metrics.
 Uncomment the `environment` entries to customize the instance further.
 
@@ -41,8 +41,16 @@ services:
 
 ## Environment variables in docker-compose
 
-| Variable | Description |
-|---|---|
-| `OPENCLAW_DATA_DIR` | Explicit path to the OpenClaw data directory inside the container |
-| `OPENCLAW_USER` | Your name shown in the Flow tab |
-| `MC_URL` | Mission Control URL (disabled by default) |
+All environment variables supported by [ClawMetry](https://clawmetry.com/) can be used in your `docker-compose.yml`:
+
+| Variable | CLI equivalent | Description |
+|---|---|---|
+| `OPENCLAW_HOME` | `--workspace` | Path to the agent workspace directory |
+| `OPENCLAW_DATA_DIR` | `--data-dir` | OpenClaw data dir (auto-sets workspace, sessions, crons) |
+| `OPENCLAW_LOG_DIR` | `--log-dir` | Directory containing agent log files |
+| `OPENCLAW_SESSIONS_DIR` | `--sessions-dir` | Directory containing session `.jsonl` files |
+| `OPENCLAW_USER` | `--name` | Your name shown in the Flow tab |
+| `MC_URL` | `--mc-url` | Mission Control URL (disabled by default) |
+| `CLAWMETRY_FLEET_KEY` | `--fleet-api-key` | API key for multi-node fleet authentication |
+
+For detailed descriptions of each variable, see the [Configuration reference](/guide/configuration).
