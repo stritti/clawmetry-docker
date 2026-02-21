@@ -6,9 +6,9 @@ ARG CLAWMETRY_VERSION=latest
 RUN python -m venv /venv
 
 RUN if [ "$CLAWMETRY_VERSION" = "latest" ]; then \
-        /venv/bin/pip install --no-cache-dir clawmetry; \
+        /venv/bin/pip install --no-cache-dir clawmetry[otel]; \
     else \
-        /venv/bin/pip install --no-cache-dir clawmetry==$CLAWMETRY_VERSION; \
+        /venv/bin/pip install --no-cache-dir clawmetry[otel]==$CLAWMETRY_VERSION; \
     fi
 
 # Stage 2: Runtime – copy only the installed package, no build tools
