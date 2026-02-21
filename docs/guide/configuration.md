@@ -20,5 +20,5 @@ All CLI flags can alternatively be set via environment variables.
 docker run -p 8900:8900 \
   -e OPENCLAW_DATA_DIR=/root/.openclaw \
   -v ~/.openclaw:/root/.openclaw \
-  ghcr.io/stritti/clawmetry-docker:latest
+  stritti/clawmetry:latest
 ```

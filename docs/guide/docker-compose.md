@@ -18,7 +18,7 @@ Uncomment the `environment` entries to customize the instance further.
 ```yaml
 services:
   clawmetry:
-    image: ghcr.io/stritti/clawmetry-docker:latest
+    image: stritti/clawmetry:latest
     ports:
       # Map host port 8900 to container port 8900 (clawmetry web UI)
       - "8900:8900"
@@ -35,6 +35,9 @@ services:
       # MC_URL: "https://your-mission-control"
     restart: unless-stopped
 ```
+
+> **Alternative:** You can also use the image from the [GitHub Container Registry](https://github.com/stritti/clawmetry-docker/pkgs/container/clawmetry-docker):
+> `image: ghcr.io/stritti/clawmetry-docker:latest`
 
 ## Environment variables in docker-compose
 
