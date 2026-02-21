@@ -2,7 +2,7 @@
 
 Docker Image for [clawmetry](https://clawmetry.com/) — real-time observability dashboard for [OpenClaw](https://github.com/openclaw/openclaw) AI agents.
 
-The image is built automatically from the latest [clawmetry PyPI release](https://pypi.org/project/clawmetry/) and published to both [Docker Hub](https://hub.docker.com/r/stritti/clawmetry-docker) and the [GitHub Container Registry](https://github.com/stritti/clawmetry-docker/pkgs/container/clawmetry-docker).
+The image is built automatically from the latest [clawmetry PyPI release](https://pypi.org/project/clawmetry/) and published to both [Docker Hub](https://hub.docker.com/r/stritti/clawmetry) and the [GitHub Container Registry](https://github.com/stritti/clawmetry-docker/pkgs/container/clawmetry-docker).
 
 ## Usage
 
@@ -10,7 +10,7 @@ The image is built automatically from the latest [clawmetry PyPI release](https:
 
 **Docker Hub:**
 ```bash
-docker run -p 8900:8900 stritti/clawmetry-docker:latest
+docker run -p 8900:8900 stritti/clawmetry:latest
 ```
 
 **GitHub Container Registry:**
@@ -28,7 +28,7 @@ Mount your host workspace to that path so the dashboard can read logs, sessions,
 ```bash
 docker run -p 8900:8900 \
   -v ~/.openclaw:/root/.openclaw \
-  stritti/clawmetry-docker:latest
+  stritti/clawmetry:latest
 ```
 
 Or pass a custom path explicitly:
@@ -36,7 +36,7 @@ Or pass a custom path explicitly:
 ```bash
 docker run -p 8900:8900 \
   -v /path/to/workspace:/data \
-  stritti/clawmetry-docker:latest --data-dir /data
+  stritti/clawmetry:latest --data-dir /data
 ```
 
 ### Environment variables
@@ -59,7 +59,7 @@ Example with environment variables:
 docker run -p 8900:8900 \
   -e OPENCLAW_DATA_DIR=/root/.openclaw \
   -v ~/.openclaw:/root/.openclaw \
-  stritti/clawmetry-docker:latest
+  stritti/clawmetry:latest
 ```
 
 ### docker-compose
@@ -88,7 +88,7 @@ Full `docker-compose.yml`:
 ```yaml
 services:
   clawmetry:
-    image: stritti/clawmetry-docker:latest
+    image: stritti/clawmetry:latest
     ports:
       # Map host port 8900 to container port 8900 (clawmetry web UI)
       - "8900:8900"
@@ -113,7 +113,7 @@ The same tags are published to both registries:
 - `latest` — latest clawmetry release
 - `x.y.z` — specific clawmetry version (e.g. `0.9.0`)
 
-**Docker Hub:** `stritti/clawmetry-docker:<tag>`
+**Docker Hub:** `stritti/clawmetry:<tag>`
 
 **GHCR:** `ghcr.io/stritti/clawmetry-docker:<tag>`
 

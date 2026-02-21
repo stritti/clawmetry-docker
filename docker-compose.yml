@@ -1,6 +1,6 @@
 services:
   clawmetry:
-    image: stritti/clawmetry-docker:latest
+    image: stritti/clawmetry:latest
     # Alternatively use the GitHub Container Registry image:
     # image: ghcr.io/stritti/clawmetry-docker:latest
     ports:
