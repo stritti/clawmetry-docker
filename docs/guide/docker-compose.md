@@ -11,7 +11,7 @@ Then open **http://localhost:8900** in your browser.
 
 The file mounts your local `~/.openclaw` workspace into the container so the dashboard
 can read logs, sessions, memory files, and metrics.
-Uncomment the `environment` entries to customise the instance further.
+Uncomment the `environment` entries to customize the instance further.
 
 ## docker-compose.yml
 
