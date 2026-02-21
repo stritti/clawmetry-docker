@@ -15,7 +15,7 @@ hero:
 
 features:
   - title: One-command start
-    details: Pull and run the pre-built image from GitHub Container Registry — no local Python environment needed.
+    details: Pull and run the pre-built image from Docker Hub — no local Python environment needed.
   - title: Automatic updates
     details: A scheduled GitHub Actions workflow checks PyPI daily and publishes a fresh image for every new clawmetry release.
   - title: Flexible configuration

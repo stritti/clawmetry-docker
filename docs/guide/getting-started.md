@@ -5,7 +5,7 @@
 Pull and run the latest image in a single command:
 
 ```bash
-docker run -p 8900:8900 ghcr.io/stritti/clawmetry-docker:latest
+docker run -p 8900:8900 stritti/clawmetry:latest
 ```
 
 Then open **http://localhost:8900** in your browser.
@@ -18,7 +18,7 @@ Mount your host workspace so the dashboard can read logs, sessions, memory files
 ```bash
 docker run -p 8900:8900 \
   -v ~/.openclaw:/root/.openclaw \
-  ghcr.io/stritti/clawmetry-docker:latest
+  stritti/clawmetry:latest
 ```
 
 Or pass a custom path explicitly:
@@ -26,7 +26,7 @@ Or pass a custom path explicitly:
 ```bash
 docker run -p 8900:8900 \
   -v /path/to/workspace:/data \
-  ghcr.io/stritti/clawmetry-docker:latest --data-dir /data
+  stritti/clawmetry:latest --data-dir /data
 ```
 
 ## Available tags
@@ -35,6 +35,9 @@ docker run -p 8900:8900 \
 |-----|-------------|
 | `latest` | Latest clawmetry release |
 | `x.y.z` | Specific clawmetry version (e.g. `0.9.0`) |
+
+Images are published to [Docker Hub](https://hub.docker.com/r/stritti/clawmetry) (`stritti/clawmetry:<tag>`).
+As an alternative, images are also available from the [GitHub Container Registry](https://github.com/stritti/clawmetry-docker/pkgs/container/clawmetry-docker) (`ghcr.io/stritti/clawmetry-docker:<tag>`).
 
 ## Build locally
 
