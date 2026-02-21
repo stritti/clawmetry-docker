@@ -47,21 +47,33 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Check if version already exists in registry
-        id: check
+      - name: Check if version already exists in GHCR
+        id: check_ghcr
         run: |
           IMAGE="${{ env.GHCR_REGISTRY }}/${{ github.repository }}:${{ steps.pypi.outputs.version }}"
           if docker manifest inspect "$IMAGE" > /dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
-            echo "Image $IMAGE already exists – skipping build."
+            echo "Image $IMAGE already exists in GHCR – skipping GHCR push."
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "Image $IMAGE not found – will build and push."
+            echo "Image $IMAGE not found in GHCR – will build and push."
+          fi
+
+      - name: Check if version already exists in Docker Hub
+        id: check_dockerhub
+        run: |
+          IMAGE="${{ env.DOCKERHUB_IMAGE }}:${{ steps.pypi.outputs.version }}"
+          if docker manifest inspect "$IMAGE" > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Image $IMAGE already exists in Docker Hub – skipping Docker Hub push."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Image $IMAGE not found in Docker Hub – will build and push."
           fi
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        if: steps.check.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        if: steps.check_ghcr.outputs.exists == 'false' || steps.check_dockerhub.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
         uses: docker/metadata-action@v5
         with:
           images: |
@@ -72,7 +84,7 @@ jobs:
             type=raw,value=${{ steps.pypi.outputs.version }}
 
       - name: Build and push Docker image
-        if: steps.check.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        if: steps.check_ghcr.outputs.exists == 'false' || steps.check_dockerhub.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
         uses: docker/build-push-action@v6
         with:
           context: .
