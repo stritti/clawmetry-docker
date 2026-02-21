@@ -1,6 +1,8 @@
 services:
   clawmetry:
-    image: ghcr.io/stritti/clawmetry-docker:latest
+    image: stritti/clawmetry:latest
+    # Alternatively use the GitHub Container Registry image:
+    # image: ghcr.io/stritti/clawmetry-docker:latest
     ports:
       # Map host port 8900 to container port 8900 (clawmetry web UI)
       - "8900:8900"
