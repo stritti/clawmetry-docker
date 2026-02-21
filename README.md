@@ -79,9 +79,13 @@ Uncomment the `environment` entries to customize the instance further:
 
 | Variable | Description |
 |---|---|
-| `OPENCLAW_DATA_DIR` | Explicit path to the OpenClaw data directory inside the container |
+| `OPENCLAW_HOME` | Path to the agent workspace directory |
+| `OPENCLAW_DATA_DIR` | OpenClaw data dir (auto-sets workspace, sessions, crons) |
+| `OPENCLAW_LOG_DIR` | Directory containing agent log files |
+| `OPENCLAW_SESSIONS_DIR` | Directory containing session `.jsonl` files |
 | `OPENCLAW_USER` | Your name shown in the Flow tab |
 | `MC_URL` | Mission Control URL (disabled by default) |
+| `CLAWMETRY_FLEET_KEY` | API key for multi-node fleet authentication |
 
 Full `docker-compose.yml`:
 
