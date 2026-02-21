@@ -1,14 +1,20 @@
-FROM python:3.14-slim
-
-WORKDIR /app
+# Stage 1: Build – install clawmetry into an isolated virtual environment
+FROM python:3.14-slim AS builder
 
 ARG CLAWMETRY_VERSION=latest
 
+RUN python -m venv /venv
+
 RUN if [ "$CLAWMETRY_VERSION" = "latest" ]; then \
-        pip install --no-cache-dir --root-user-action=ignore clawmetry; \
+        /venv/bin/pip install --no-cache-dir clawmetry; \
     else \
-        pip install --no-cache-dir --root-user-action=ignore clawmetry==$CLAWMETRY_VERSION; \
+        /venv/bin/pip install --no-cache-dir clawmetry==$CLAWMETRY_VERSION; \
     fi
+
+# Stage 2: Runtime – copy only the installed package, no build tools
+FROM python:3.14-slim
+
+COPY --from=builder /venv /venv
 
 # Create the default OpenClaw data directory so the container starts
 # without requiring a volume mount (clawmetry auto-detects ~/.openclaw).
@@ -19,7 +25,7 @@ VOLUME ["/root/.openclaw"]
 
 EXPOSE 8900
 
-ENTRYPOINT ["clawmetry"]
+ENTRYPOINT ["/venv/bin/clawmetry"]
 # --host 0.0.0.0   listen on all interfaces (required in containers)
 # --no-debug       disable Flask auto-reloader (not suitable for containers)
 CMD ["--host", "0.0.0.0", "--port", "8900", "--no-debug"]
