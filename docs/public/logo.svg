@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Docker-inspired blue whale body -->
+  <!-- Main body ellipse -->
+  <ellipse cx="96" cy="128" rx="68" ry="36" fill="#0db7ed"/>
+  <!-- Head area (left side) -->
+  <ellipse cx="36" cy="126" rx="22" ry="26" fill="#0db7ed"/>
+  <!-- Blowhole spout -->
+  <ellipse cx="41" cy="93" rx="7" ry="16" fill="#0db7ed"/>
+  <!-- Tail fluke (right side) -->
+  <path d="M 152 108 C 171 91, 192 102, 184 120 C 192 138, 172 150, 154 134 Z" fill="#0db7ed"/>
+  <!-- Eye -->
+  <circle cx="27" cy="120" r="4" fill="white"/>
+  <!-- Containers on whale's back -->
+  <rect x="61" y="87" width="24" height="17" rx="2" fill="white"/>
+  <rect x="89" y="87" width="24" height="17" rx="2" fill="white"/>
+  <rect x="117" y="89" width="22" height="16" rx="2" fill="white"/>
+
+  <!-- Clawmetry claw marks (three diagonal scratches) -->
+  <g stroke="#e05a00" stroke-width="5" stroke-linecap="round" fill="none">
+    <path d="M 52 48 C 56 95, 76 118, 88 168"/>
+    <path d="M 78 44 C 82 91, 102 114, 114 168"/>
+    <path d="M 104 44 C 108 91, 128 114, 140 168"/>
+  </g>
+</svg>

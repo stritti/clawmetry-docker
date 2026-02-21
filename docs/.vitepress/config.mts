@@ -9,7 +9,7 @@ export default defineConfig({
   ignoreDeadLinks: [/^http:\/\/localhost/],
 
   themeConfig: {
-    logo: '/logo.png',
+    logo: '/logo.svg',
 
     nav: [
       { text: 'Home', link: '/' },
