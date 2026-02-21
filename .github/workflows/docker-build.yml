@@ -8,6 +8,11 @@ on:
     # Check daily at 06:00 UTC for new clawmetry releases
     - cron: '0 6 * * *'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Clawmetry version to build (leave empty to use latest from PyPI)'
+        required: false
+        default: ''
 
 env:
   GHCR_REGISTRY: ghcr.io
@@ -24,13 +29,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Get latest clawmetry version from PyPI
+      - name: Get clawmetry version
         id: pypi
         run: |
-          VERSION=$(curl -sf https://pypi.org/pypi/clawmetry/json | python3 -c "import sys, json; print(json.load(sys.stdin)['info']['version'])")
-          if [ -z "$VERSION" ]; then
-            echo "Failed to fetch clawmetry version from PyPI" >&2
-            exit 1
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+            echo "Using manually specified version: $VERSION"
+          else
+            VERSION=$(curl -sf https://pypi.org/pypi/clawmetry/json | python3 -c "import sys, json; print(json.load(sys.stdin)['info']['version'])")
+            if [ -z "$VERSION" ]; then
+              echo "Failed to fetch clawmetry version from PyPI" >&2
+              exit 1
+            fi
+            echo "Using latest version from PyPI: $VERSION"
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
