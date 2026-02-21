@@ -4,7 +4,7 @@ layout: home
 hero:
   name: clawmetry-docker
   text: Real-time observability for OpenClaw AI agents
-  tagline: A ready-to-use Docker image for the <a href="https://clawmetry.com/" target="_blank">clawmetry</a> dashboard — zero Python setup required.
+  tagline: A ready-to-use Docker image for the <a href="https://clawmetry.com/" target="_blank">ClawMetry</a> dashboard — zero Python setup required.
   actions:
     - theme: brand
       text: Get Started
@@ -13,14 +13,17 @@ hero:
       text: clawmetry.com
       link: https://clawmetry.com/
     - theme: alt
+      text: Docker Hub
+      link: https://hub.docker.com/r/stritti/clawmetry
+    - theme: alt
       text: View on GitHub
       link: https://github.com/stritti/clawmetry-docker
 
 features:
   - title: One-command start
-    details: Pull and run the pre-built image from Docker Hub — no local Python environment needed. Powered by <a href="https://clawmetry.com/" target="_blank">clawmetry</a>.
+    details: Pull and run the pre-built image from Docker Hub — no local Python environment needed. Powered by <a href="https://clawmetry.com/" target="_blank">ClawMetry</a>.
   - title: Automatic updates
-    details: A scheduled GitHub Actions workflow checks PyPI daily and publishes a fresh image for every new <a href="https://clawmetry.com/" target="_blank">clawmetry</a> release.
+    details: A scheduled GitHub Actions workflow checks PyPI daily and publishes a fresh image for every new <a href="https://clawmetry.com/" target="_blank">ClawMetry</a> release.
   - title: Flexible configuration
     details: All settings are configurable via environment variables or CLI flags so you can adapt the container to any workspace layout. See the <a href="/guide/configuration">configuration reference</a>.
 ---

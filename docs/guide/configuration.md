@@ -1,6 +1,6 @@
 # Configuration
 
-[Clawmetry](https://clawmetry.com/) can be configured either via CLI flags passed to the container command or via environment variables.
+[ClawMetry](https://clawmetry.com/) can be configured either via CLI flags passed to the container command or via environment variables.
 
 ## Environment variables
 
@@ -49,7 +49,7 @@ Override this when your logs are stored in a location separate from the main wor
 #### `OPENCLAW_SESSIONS_DIR` — `--sessions-dir`
 
 Directory that contains the session recording files (`.jsonl` format).
-Each session is stored as a separate `.jsonl` file and is read by [clawmetry](https://clawmetry.com/) to populate the Sessions and Flow views.
+Each session is stored as a separate `.jsonl` file and is read by [ClawMetry](https://clawmetry.com/) to populate the Sessions and Flow views.
 
 ```bash
 -e OPENCLAW_SESSIONS_DIR=/root/.openclaw/sessions
@@ -57,7 +57,7 @@ Each session is stored as a separate `.jsonl` file and is read by [clawmetry](ht
 
 #### `OPENCLAW_USER` — `--name`
 
-Your display name shown in the **Flow** tab of the [clawmetry](https://clawmetry.com/) dashboard.
+Your display name shown in the **Flow** tab of the [ClawMetry](https://clawmetry.com/) dashboard.
 Useful when multiple users share the same workspace or fleet.
 
 ```bash
@@ -67,7 +67,7 @@ Useful when multiple users share the same workspace or fleet.
 #### `MC_URL` — `--mc-url`
 
 URL of the Mission Control server.
-Mission Control is disabled by default; set this variable to connect [clawmetry](https://clawmetry.com/) to a running Mission Control instance for centralized fleet oversight.
+Mission Control is disabled by default; set this variable to connect [ClawMetry](https://clawmetry.com/) to a running Mission Control instance for centralized fleet oversight.
 
 ```bash
 -e MC_URL="https://your-mission-control"
@@ -76,7 +76,7 @@ Mission Control is disabled by default; set this variable to connect [clawmetry]
 #### `CLAWMETRY_FLEET_KEY` — `--fleet-api-key`
 
 API key used to authenticate this node against a multi-node fleet.
-Required when running [clawmetry](https://clawmetry.com/) in a distributed setup where multiple agents report to a shared Mission Control.
+Required when running [ClawMetry](https://clawmetry.com/) in a distributed setup where multiple agents report to a shared Mission Control.
 
 ```bash
 -e CLAWMETRY_FLEET_KEY="your-api-key"

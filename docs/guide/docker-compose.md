@@ -9,7 +9,7 @@ docker compose up -d
 
 Then open **http://localhost:8900** in your browser.
 
-The file mounts your local `~/.openclaw` workspace into the container so the [clawmetry](https://clawmetry.com/) dashboard
+The file mounts your local `~/.openclaw` workspace into the container so the [ClawMetry](https://clawmetry.com/) dashboard
 can read logs, sessions, memory files, and metrics.
 Uncomment the `environment` entries to customize the instance further.
 
@@ -41,7 +41,7 @@ services:
 
 ## Environment variables in docker-compose
 
-All environment variables supported by [clawmetry](https://clawmetry.com/) can be used in your `docker-compose.yml`:
+All environment variables supported by [ClawMetry](https://clawmetry.com/) can be used in your `docker-compose.yml`:
 
 | Variable | CLI equivalent | Description |
 |---|---|---|
