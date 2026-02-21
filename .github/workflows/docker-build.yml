@@ -28,6 +28,10 @@ jobs:
         id: pypi
         run: |
           VERSION=$(curl -sf https://pypi.org/pypi/clawmetry/json | python3 -c "import sys, json; print(json.load(sys.stdin)['info']['version'])")
+          if [ -z "$VERSION" ]; then
+            echo "Failed to fetch clawmetry version from PyPI" >&2
+            exit 1
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Log in to the Container registry
@@ -37,8 +41,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check if version already exists in registry
+        id: check
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.pypi.outputs.version }}"
+          if docker manifest inspect "$IMAGE" > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Image $IMAGE already exists – skipping build."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Image $IMAGE not found – will build and push."
+          fi
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
+        if: steps.check.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
@@ -47,6 +64,7 @@ jobs:
             type=raw,value=${{ steps.pypi.outputs.version }}
 
       - name: Build and push Docker image
+        if: steps.check.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
         uses: docker/build-push-action@v6
         with:
           context: .
