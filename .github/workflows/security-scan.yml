@@ -37,7 +37,7 @@ jobs:
           tags: clawmetry:scan
 
       - name: Run Trivy vulnerability scan on Docker image
-        uses: aquasecurity/trivy-action@0.30.0
+        uses: aquasecurity/trivy-action@0.34.1
         with:
           image-ref: clawmetry:scan
           format: sarif
@@ -54,7 +54,7 @@ jobs:
 
       - name: Run Trivy vulnerability scan on Dockerfile (misconfiguration)
         if: always()
-        uses: aquasecurity/trivy-action@0.30.0
+        uses: aquasecurity/trivy-action@0.34.1
         with:
           scan-type: config
           scan-ref: Dockerfile
