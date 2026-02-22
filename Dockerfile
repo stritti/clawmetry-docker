@@ -40,7 +40,7 @@ USER clawmetry
 EXPOSE 8900
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:8900')" || exit 1
+    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:8900').read()" || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]
 # --host 0.0.0.0   listen on all interfaces (required in containers)
