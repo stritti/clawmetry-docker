@@ -1,0 +1,25 @@
+version: 2
+updates:
+  # Keep GitHub Actions up to date
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+
+  # Keep Docker base images up to date
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+
+  # Keep VitePress and other npm dependencies up to date
+  - package-ecosystem: npm
+    directory: /docs
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
