@@ -16,7 +16,7 @@ hero:
       text: Docker Hub
       link: https://hub.docker.com/r/stritti/clawmetry
     - theme: alt
-      text: View on GitHub
+      text: ⭐ Star on GitHub
       link: https://github.com/stritti/clawmetry-docker
 
 features:
@@ -27,3 +27,13 @@ features:
   - title: Flexible configuration
     details: All settings are configurable via environment variables or CLI flags so you can adapt the container to any workspace layout. See the <a href="/guide/configuration">configuration reference</a>.
 ---
+
+<div style="text-align:center;margin-top:1.5rem;">
+  <a href="https://github.com/stritti/clawmetry-docker" target="_blank">
+    <img src="https://img.shields.io/github/stars/stritti/clawmetry-docker?style=social" alt="GitHub Stars">
+  </a>
+  &nbsp;
+  <a href="https://pypi.org/project/clawmetry/" target="_blank">
+    <img src="https://img.shields.io/pypi/v/clawmetry?label=ClawMetry" alt="ClawMetry version">
+  </a>
+</div>

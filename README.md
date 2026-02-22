@@ -1,5 +1,8 @@
 # 🦞 ClawMetry dockerizerd 🐋
 
+[![GitHub Stars](https://img.shields.io/github/stars/stritti/clawmetry-docker?style=social)](https://github.com/stritti/clawmetry-docker)
+[![ClawMetry version](https://img.shields.io/pypi/v/clawmetry?label=ClawMetry)](https://pypi.org/project/clawmetry/)
+
 Docker Image for [ClawMetry](https://clawmetry.com/) — real-time observability dashboard for [OpenClaw](https://github.com/openclaw/openclaw) AI agents.
 
 The image is built automatically from the latest [ClawMetry PyPI release](https://pypi.org/project/clawmetry/) and published to both [Docker Hub](https://hub.docker.com/r/stritti/clawmetry) and the [GitHub Container Registry](https://github.com/stritti/clawmetry-docker/pkgs/container/clawmetry-docker).
