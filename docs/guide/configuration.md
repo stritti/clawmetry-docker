@@ -21,11 +21,11 @@ All CLI flags can alternatively be set via environment variables:
 #### `OPENCLAW_HOME` — `--workspace`
 
 The root workspace directory used by the [OpenClaw](https://github.com/openclaw/openclaw) agent.
-Defaults to `~/.openclaw` (= `/root/.openclaw` inside the container).
+Defaults to `~/.openclaw` (= `/home/clawmetry/.openclaw` inside the container).
 When no other directory variables are set, log, session, and cron paths are derived from this location.
 
 ```bash
--e OPENCLAW_HOME=/root/.openclaw
+-e OPENCLAW_HOME=/home/clawmetry/.openclaw
 ```
 
 #### `OPENCLAW_DATA_DIR` — `--data-dir`
@@ -34,7 +34,7 @@ Convenience variable that sets the OpenClaw data directory and **automatically c
 Use this instead of setting each directory individually when all your data lives under a single root.
 
 ```bash
--e OPENCLAW_DATA_DIR=/root/.openclaw
+-e OPENCLAW_DATA_DIR=/home/clawmetry/.openclaw
 ```
 
 #### `OPENCLAW_LOG_DIR` — `--log-dir`
@@ -43,7 +43,7 @@ Directory where the OpenClaw agent writes its log files.
 Override this when your logs are stored in a location separate from the main workspace (e.g. a dedicated log volume).
 
 ```bash
--e OPENCLAW_LOG_DIR=/root/.openclaw/logs
+-e OPENCLAW_LOG_DIR=/home/clawmetry/.openclaw/logs
 ```
 
 #### `OPENCLAW_SESSIONS_DIR` — `--sessions-dir`
@@ -52,7 +52,7 @@ Directory that contains the session recording files (`.jsonl` format).
 Each session is stored as a separate `.jsonl` file and is read by [ClawMetry](https://clawmetry.com/) to populate the Sessions and Flow views.
 
 ```bash
--e OPENCLAW_SESSIONS_DIR=/root/.openclaw/sessions
+-e OPENCLAW_SESSIONS_DIR=/home/clawmetry/.openclaw/sessions
 ```
 
 #### `OPENCLAW_USER` — `--name`
@@ -86,7 +86,7 @@ Required when running [ClawMetry](https://clawmetry.com/) in a distributed setup
 
 ```bash
 docker run -p 8900:8900 \
-  -e OPENCLAW_DATA_DIR=/root/.openclaw \
-  -v ~/.openclaw:/root/.openclaw \
+  -e OPENCLAW_DATA_DIR=/home/clawmetry/.openclaw \
+  -v ~/.openclaw:/home/clawmetry/.openclaw \
   stritti/clawmetry:latest
 ```

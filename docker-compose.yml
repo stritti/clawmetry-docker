@@ -9,10 +9,10 @@ services:
     volumes:
       # Mount the local OpenClaw workspace so the dashboard can read logs,
       # sessions, memory files, and metrics.
-      - ~/.openclaw:/root/.openclaw
+      - ~/.openclaw:/home/clawmetry/.openclaw
     environment:
       # Optional: explicitly set the OpenClaw data directory
-      # OPENCLAW_DATA_DIR: /root/.openclaw
+      # OPENCLAW_DATA_DIR: /home/clawmetry/.openclaw
       # Optional: show your name in the Flow tab
       # OPENCLAW_USER: "Your Name"
       # Optional: Mission Control URL

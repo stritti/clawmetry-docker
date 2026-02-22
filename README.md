@@ -26,12 +26,12 @@ Then open **http://localhost:8900** in your browser.
 
 ### Mount your OpenClaw data directory (recommended)
 
-ClawMetry auto-detects the OpenClaw workspace at `~/.openclaw` (= `/root/.openclaw` inside the container).
+ClawMetry auto-detects the OpenClaw workspace at `~/.openclaw` (= `/home/clawmetry/.openclaw` inside the container).
 Mount your host workspace to that path so the dashboard can read logs, sessions, memory files, and metrics:
 
 ```bash
 docker run -p 8900:8900 \
-  -v ~/.openclaw:/root/.openclaw \
+  -v ~/.openclaw:/home/clawmetry/.openclaw \
   stritti/clawmetry:latest
 ```
 
@@ -61,8 +61,8 @@ Example with environment variables:
 
 ```bash
 docker run -p 8900:8900 \
-  -e OPENCLAW_DATA_DIR=/root/.openclaw \
-  -v ~/.openclaw:/root/.openclaw \
+  -e OPENCLAW_DATA_DIR=/home/clawmetry/.openclaw \
+  -v ~/.openclaw:/home/clawmetry/.openclaw \
   stritti/clawmetry:latest
 ```
 
@@ -103,10 +103,10 @@ services:
     volumes:
       # Mount the local OpenClaw workspace so the dashboard can read logs,
       # sessions, memory files, and metrics.
-      - ~/.openclaw:/root/.openclaw
+      - ~/.openclaw:/home/clawmetry/.openclaw
     environment:
       # Optional: explicitly set the OpenClaw data directory
-      # OPENCLAW_DATA_DIR: /root/.openclaw
+      # OPENCLAW_DATA_DIR: /home/clawmetry/.openclaw
       # Optional: show your name in the Flow tab
       # OPENCLAW_USER: "Your Name"
       # Optional: Mission Control URL
@@ -129,7 +129,7 @@ The same tags are published to both registries:
 
 ```bash
 docker build -t clawmetry-docker .
-docker run -p 8900:8900 -v ~/.openclaw:/root/.openclaw clawmetry-docker
+docker run -p 8900:8900 -v ~/.openclaw:/home/clawmetry/.openclaw clawmetry-docker
 ```
 
 ## Automatic updates
