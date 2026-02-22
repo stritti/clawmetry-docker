@@ -12,12 +12,12 @@ Then open **http://localhost:8900** in your browser.
 
 ## Mount your OpenClaw workspace (recommended)
 
-[ClawMetry](https://clawmetry.com/) auto-detects the OpenClaw workspace at `~/.openclaw` (`/root/.openclaw` inside the container).
+[ClawMetry](https://clawmetry.com/) auto-detects the OpenClaw workspace at `~/.openclaw` (`/home/clawmetry/.openclaw` inside the container).
 Mount your host workspace so the dashboard can read logs, sessions, memory files, and metrics:
 
 ```bash
 docker run -p 8900:8900 \
-  -v ~/.openclaw:/root/.openclaw \
+  -v ~/.openclaw:/home/clawmetry/.openclaw \
   stritti/clawmetry:latest
 ```
 
@@ -43,5 +43,5 @@ As an alternative, images are also available from the [GitHub Container Registry
 
 ```bash
 docker build -t clawmetry-docker .
-docker run -p 8900:8900 -v ~/.openclaw:/root/.openclaw clawmetry-docker
+docker run -p 8900:8900 -v ~/.openclaw:/home/clawmetry/.openclaw clawmetry-docker
 ```

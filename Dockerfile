@@ -16,12 +16,16 @@ FROM python:3.14-slim
 
 COPY --from=builder /venv /venv
 
+# Create a non-root user to run the application.
+RUN useradd -m -u 1000 clawmetry
+
 # Create the default OpenClaw data directory so the container starts
 # without requiring a volume mount (clawmetry auto-detects ~/.openclaw).
-RUN mkdir -p /root/.openclaw
+RUN mkdir -p /home/clawmetry/.openclaw && \
+    chown -R clawmetry:clawmetry /home/clawmetry/.openclaw
 
 # Persist the OpenClaw workspace data outside the container.
-VOLUME ["/root/.openclaw"]
+VOLUME ["/home/clawmetry/.openclaw"]
 
 # Application directory – gunicorn imports wsgi.py from here.
 WORKDIR /app
@@ -31,7 +35,12 @@ COPY wsgi.py .
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+USER clawmetry
+
 EXPOSE 8900
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:8900')" || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]
 # --host 0.0.0.0   listen on all interfaces (required in containers)
