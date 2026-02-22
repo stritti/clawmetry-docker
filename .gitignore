@@ -137,3 +137,8 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# ClawMetry runtime files (created during local testing)
+.clawmetry-metrics.json
+.clawmetry-fleet.db
+gunicorn.ctl
