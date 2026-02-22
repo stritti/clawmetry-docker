@@ -45,4 +45,5 @@ exec /venv/bin/gunicorn \
     --workers 1 \
     --threads 16 \
     --timeout 120 \
+    --capture-output \
     wsgi:app
