@@ -1,4 +1,4 @@
-# clawmetry-docker
+# 🦞 ClawMetry dockerizerd 🐋
 
 Docker Image for [ClawMetry](https://clawmetry.com/) — real-time observability dashboard for [OpenClaw](https://github.com/openclaw/openclaw) AI agents.
 
