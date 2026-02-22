@@ -142,3 +142,7 @@ vite.config.ts.timestamp-*
 .clawmetry-metrics.json
 .clawmetry-fleet.db
 gunicorn.ctl
+
+# Python cache
+__pycache__/
+*.pyc
