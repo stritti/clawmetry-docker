@@ -2,6 +2,7 @@
 
 [![GitHub Stars](https://img.shields.io/github/stars/stritti/clawmetry-docker?style=social)](https://github.com/stritti/clawmetry-docker)
 [![ClawMetry version](https://img.shields.io/pypi/v/clawmetry?label=ClawMetry)](https://pypi.org/project/clawmetry/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/stritti/clawmetry?label=Docker%20Pulls)](https://hub.docker.com/r/stritti/clawmetry)
 
 Docker Image for [ClawMetry](https://clawmetry.com/) — real-time observability dashboard for [OpenClaw](https://github.com/openclaw/openclaw) AI agents.
 

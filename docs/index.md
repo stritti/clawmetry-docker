@@ -36,4 +36,8 @@ features:
   <a href="https://pypi.org/project/clawmetry/" target="_blank">
     <img src="https://img.shields.io/pypi/v/clawmetry?label=ClawMetry" alt="ClawMetry version">
   </a>
+  &nbsp;
+  <a href="https://hub.docker.com/r/stritti/clawmetry" target="_blank">
+    <img src="https://img.shields.io/docker/pulls/stritti/clawmetry?label=Docker%20Pulls" alt="Docker Pulls">
+  </a>
 </div>
