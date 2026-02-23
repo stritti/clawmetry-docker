@@ -56,6 +56,14 @@ _Flask.run = _original_run  # type: ignore[method-assign]
 # Traefik must also strip that prefix before forwarding requests here
 # (use the stripprefix middleware — see docker-compose.traefik.yml).
 _script_name = os.environ.get("SCRIPT_NAME", "").rstrip("/")
+# Validate SCRIPT_NAME: it must be empty or start with '/' to satisfy the WSGI
+# spec and to keep PATH_INFO rewriting consistent. Treat a lone '/' as empty.
+if _script_name == "/":
+    _script_name = ""
+elif _script_name and not _script_name.startswith("/"):
+    raise ValueError(
+        f"Invalid SCRIPT_NAME={_script_name!r}: must be empty or start with '/'."
+    )
 if _script_name:
     _inner_app = app.wsgi_app
 
