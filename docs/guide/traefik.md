@@ -201,6 +201,11 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      # Enable label scanning on Traefik itself to define the shared auth middleware
+      - "traefik.enable=true"
+      # Shared basic-auth middleware — use $$ instead of $ in the hash (Compose escaping)
+      - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_BASICAUTH_USERS}"
     restart: unless-stopped
     networks:
       - proxy
@@ -217,7 +222,6 @@ services:
       - "traefik.http.routers.openclaw.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.openclaw.entrypoints=websecure"
       - "traefik.http.routers.openclaw.tls=true"
-      - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_BASICAUTH_USERS}"
       - "traefik.http.routers.openclaw.middlewares=auth@docker"
       - "traefik.http.services.openclaw.loadbalancer.server.port=18789"
     restart: unless-stopped
@@ -249,8 +253,8 @@ services:
       - "traefik.http.routers.clawmetry.tls=true"
       # Strip /stats before forwarding to ClawMetry
       - "traefik.http.middlewares.stats-strip.stripprefix.prefixes=/stats"
-      - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_BASICAUTH_USERS}"
-      - "traefik.http.routers.clawmetry.middlewares=auth,stats-strip"
+      # Apply the shared basic-auth middleware (defined on the traefik service)
+      - "traefik.http.routers.clawmetry.middlewares=auth@docker,stats-strip"
       - "traefik.http.services.clawmetry.loadbalancer.server.port=8900"
     restart: unless-stopped
     networks:

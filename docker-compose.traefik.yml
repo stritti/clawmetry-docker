@@ -40,6 +40,14 @@ services:
     volumes:
       # Read-only Docker socket — Traefik watches containers for routing changes
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      # Enable label scanning on the Traefik container itself so the auth
+      # middleware defined here is available to all routers in this compose stack.
+      - "traefik.enable=true"
+      # Shared HTTP Basic Auth middleware — protects both the OpenClaw and
+      # ClawMetry routers. Credentials are loaded from .env at startup.
+      # Use $$ in the hash value instead of $ (Docker Compose escaping).
+      - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_BASICAUTH_USERS}"
     restart: unless-stopped
     networks:
       - proxy
@@ -61,7 +69,7 @@ services:
       - "traefik.http.routers.openclaw.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.openclaw.entrypoints=websecure"
       - "traefik.http.routers.openclaw.tls=true"
-      # Reference the shared basic-auth middleware (defined via Docker labels on the clawmetry service)
+      # Apply the shared basic-auth middleware (defined on the traefik service above)
       - "traefik.http.routers.openclaw.middlewares=auth@docker"
       - "traefik.http.services.openclaw.loadbalancer.server.port=18789"
     restart: unless-stopped
@@ -100,10 +108,8 @@ services:
       # The SCRIPT_NAME env var above tells ClawMetry about the prefix so it
       # generates correct absolute URLs for assets, API calls, and redirects.
       - "traefik.http.middlewares.stats-strip.stripprefix.prefixes=/stats"
-      # Define the shared basic-auth middleware (credentials loaded from .env)
-      # Use $$ in the hash value instead of $ (Docker Compose escaping)
-      - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_BASICAUTH_USERS}"
-      - "traefik.http.routers.clawmetry.middlewares=auth,stats-strip"
+      # Apply the shared basic-auth middleware (defined on the traefik service above)
+      - "traefik.http.routers.clawmetry.middlewares=auth@docker,stats-strip"
       - "traefik.http.services.clawmetry.loadbalancer.server.port=8900"
     restart: unless-stopped
     networks:
