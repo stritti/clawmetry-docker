@@ -106,10 +106,37 @@ admin:$2y$05$someLongHashStringHere...
 
 Copy the output and note it for the next step.
 
-## Step 4 — Add the hostname to `/etc/hosts`
+## Step 4 — Make the hostname reachable on the network
 
-Add one line to `/etc/hosts` on every machine that needs access to the services
-(replace `192.168.1.100` with your Pi's actual LAN IP address):
+Traefik routes requests by hostname. You have two options:
+
+### Option A — Bonjour / mDNS (recommended for Raspberry Pi)
+
+If you set the Pi's hostname to `openclaw`, other devices on the same local network
+(macOS, modern Linux, Windows 10/11 with Bonjour installed) will automatically resolve
+`openclaw.local` — **no manual `/etc/hosts` editing required**.
+
+1. Set the Pi's hostname:
+
+   ```bash
+   sudo hostnamectl set-hostname openclaw
+   ```
+
+2. Make sure `avahi-daemon` is installed and running (it is enabled by default on Raspberry Pi OS):
+
+   ```bash
+   sudo apt install avahi-daemon   # only needed if not already installed
+   sudo systemctl enable --now avahi-daemon
+   ```
+
+3. After a few seconds, every device on the same LAN can reach the Pi at `openclaw.local`.
+
+> **Windows note:** mDNS support is built into Windows 10 (1903+) and Windows 11. If `openclaw.local` does not resolve, install [Bonjour Print Services](https://support.apple.com/downloads/bonjour-for-windows) from Apple.
+
+### Option B — Static `/etc/hosts` entry
+
+If you prefer not to change the Pi's hostname, add one line to `/etc/hosts` on every
+machine that needs access (replace `192.168.1.100` with your Pi's actual LAN IP address):
 
 ```
 192.168.1.100  openclaw.local
