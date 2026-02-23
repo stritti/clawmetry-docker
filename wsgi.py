@@ -6,6 +6,7 @@ object for gunicorn to serve.  Flask's built-in Werkzeug development server
 is never started.
 """
 import logging
+import os
 import sys
 
 # Ensure ClawMetry log records reach Docker's log stream alongside gunicorn's
@@ -47,3 +48,30 @@ main()  # detect_config, load metrics, start background threads; app.run() is a 
 
 # Restore Flask.run to avoid interfering with other code that may inspect it.
 _Flask.run = _original_run  # type: ignore[method-assign]
+
+# Optional: run ClawMetry at a URL subpath (e.g. /stats) so that Flask
+# generates correct asset and API URLs when reverse-proxied by Traefik.
+# Set the SCRIPT_NAME environment variable to the desired prefix, for example:
+#   SCRIPT_NAME=/stats
+# Traefik must also strip that prefix before forwarding requests here
+# (use the stripprefix middleware — see docker-compose.traefik.yml).
+_script_name = os.environ.get("SCRIPT_NAME", "").rstrip("/")
+# Validate SCRIPT_NAME: it must be empty or start with '/' to satisfy the WSGI
+# spec and to keep PATH_INFO rewriting consistent. Treat a lone '/' as empty.
+if _script_name == "/":
+    _script_name = ""
+elif _script_name and not _script_name.startswith("/"):
+    raise ValueError(
+        f"Invalid SCRIPT_NAME={_script_name!r}: must be empty or start with '/'."
+    )
+if _script_name:
+    _inner_app = app.wsgi_app
+
+    def _with_script_name(environ, start_response):
+        environ["SCRIPT_NAME"] = _script_name
+        path_info = environ.get("PATH_INFO", "")
+        if path_info == _script_name or path_info.startswith(_script_name + "/"):
+            environ["PATH_INFO"] = path_info[len(_script_name):] or "/"
+        return _inner_app(environ, start_response)
+
+    app.wsgi_app = _with_script_name  # type: ignore[method-assign]
