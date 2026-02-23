@@ -324,7 +324,7 @@ The [ClawMetry](https://clawmetry.com/) dashboard shows live metrics, session re
 | Self-signed certificate | The TLS certificate is self-signed and will trigger a browser warning. Add an exception once. Never expose this setup on a public network. |
 | Non-root containers | Both ClawMetry and OpenClaw run as user `1000` — never add `privileged: true`. |
 | Read-only volume | ClawMetry mounts `~/.openclaw` with `:ro` — it cannot modify agent data. |
-| Internal network | The `internal` network has no direct internet routing — containers communicate with each other but external traffic must pass through Traefik. |
+| Internal network | The `internal` Docker network is used only for inter-container communication and is not published directly on the host; in this setup, services are exposed to your LAN only through Traefik’s ports. |
 | Direct port exposure | Never bind ports `8900` or `18789` directly on the host — always route through Traefik. |
 | Resource limits | The `deploy.resources.limits` block prevents a runaway agent from consuming all available CPU and memory. |
 | Traefik dashboard | The Traefik API/dashboard is disabled by default in this configuration. Enable it only temporarily and protect it with basic auth if needed. |
