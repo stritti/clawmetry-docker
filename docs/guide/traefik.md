@@ -217,6 +217,7 @@ services:
       - "traefik.http.routers.openclaw.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.openclaw.entrypoints=websecure"
       - "traefik.http.routers.openclaw.tls=true"
+      - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_BASICAUTH_USERS}"
       - "traefik.http.routers.openclaw.middlewares=auth@docker"
       - "traefik.http.services.openclaw.loadbalancer.server.port=18789"
     restart: unless-stopped
