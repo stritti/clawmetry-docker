@@ -340,10 +340,11 @@ docker compose logs -f clawmetry
 # Restart a single service
 docker compose restart clawmetry
 
-# Stop the stack (data is preserved)
+# Stop the stack (containers are removed, bind-mounted data like ~/.openclaw is preserved)
 docker compose down
 
-# Stop the stack and remove all volumes (destructive!)
+# Stop the stack and remove Docker-managed (named/anonymous) volumes.
+# NOTE: This does NOT delete your ~/.openclaw directory (bind-mount data); remove it manually if desired.
 docker compose down -v
 ```
 
