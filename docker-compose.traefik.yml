@@ -2,13 +2,16 @@
 #
 # Internal home lab / LAN setup: OpenClaw gateway + ClawMetry dashboard + Traefik
 #
-# Traefik runs on port 80 (HTTP only, no TLS) and protects both services
-# with HTTP Basic Auth. No public IP or domain name required.
+# Both services are served from a single local hostname with HTTPS (self-signed
+# certificate generated automatically by Traefik) and protected by HTTP Basic Auth:
+#
+#   https://openclaw.local        → OpenClaw gateway
+#   https://openclaw.local/stats  → ClawMetry dashboard
 #
 # Prerequisites:
 #   1. Copy .env.traefik.example to .env and fill in all required values.
-#   2. Generate a bcrypt password hash — see docs/guide/traefik.md for instructions.
-#   3. Add local hostnames to /etc/hosts — see docs/guide/traefik.md Step 4.
+#   2. Generate a bcrypt password hash — see docs/guide/traefik.md Step 3.
+#   3. Add the hostname to /etc/hosts — see docs/guide/traefik.md Step 4.
 #   4. Run the OpenClaw onboarding wizard first — see docs/guide/traefik.md Step 1.
 #
 # Usage:
@@ -16,17 +19,24 @@
 
 services:
 
-  # ─── Traefik reverse proxy (HTTP only, no TLS) ─────────────────────────────
+  # ─── Traefik reverse proxy ─────────────────────────────────────────────────
   traefik:
     image: traefik:v3.0
     command:
       # Discover services automatically via the Docker provider
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      # Single HTTP entry point — no HTTPS redirect, no Let's Encrypt
+      # HTTP entry point — redirects all traffic to HTTPS
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      # HTTPS entry point — Traefik generates a self-signed certificate
+      # automatically when no certresolver is configured (internal use only).
+      # Browsers will show a security warning; add a certificate exception once.
+      - "--entrypoints.websecure.address=:443"
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       # Read-only Docker socket — Traefik watches containers for routing changes
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -46,9 +56,11 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      # Route ${OPENCLAW_DOMAIN} → OpenClaw gateway (port 18789)
-      - "traefik.http.routers.openclaw.rule=Host(`${OPENCLAW_DOMAIN}`)"
-      - "traefik.http.routers.openclaw.entrypoints=web"
+      # Route https://${DOMAIN} (all paths) → OpenClaw gateway (port 18789).
+      # The ClawMetry router below has higher rule priority for /stats/* paths.
+      - "traefik.http.routers.openclaw.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.openclaw.entrypoints=websecure"
+      - "traefik.http.routers.openclaw.tls=true"
       # Reference the shared basic-auth middleware (defined via Docker labels on the clawmetry service)
       - "traefik.http.routers.openclaw.middlewares=auth@docker"
       - "traefik.http.services.openclaw.loadbalancer.server.port=18789"
@@ -73,16 +85,25 @@ services:
       OPENCLAW_DATA_DIR: /home/clawmetry/.openclaw
       # Optional: your display name in the Flow tab
       OPENCLAW_USER: "${OPENCLAW_USER:-}"
+      # Tell ClawMetry it is mounted at /stats so Flask generates correct URLs.
+      # Must match the PathPrefix rule and the stripprefix middleware below.
+      SCRIPT_NAME: "/stats"
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      # Route ${CLAWMETRY_DOMAIN} → ClawMetry dashboard (port 8900)
-      - "traefik.http.routers.clawmetry.rule=Host(`${CLAWMETRY_DOMAIN}`)"
-      - "traefik.http.routers.clawmetry.entrypoints=web"
+      # Route https://${DOMAIN}/stats/* → ClawMetry dashboard (port 8900).
+      # This rule is longer than the OpenClaw rule, so it has higher priority.
+      - "traefik.http.routers.clawmetry.rule=Host(`${DOMAIN}`) && PathPrefix(`/stats`)"
+      - "traefik.http.routers.clawmetry.entrypoints=websecure"
+      - "traefik.http.routers.clawmetry.tls=true"
+      # Strip /stats from the path before forwarding to ClawMetry.
+      # The SCRIPT_NAME env var above tells ClawMetry about the prefix so it
+      # generates correct absolute URLs for assets, API calls, and redirects.
+      - "traefik.http.middlewares.stats-strip.stripprefix.prefixes=/stats"
       # Define the shared basic-auth middleware (credentials loaded from .env)
       # Use $$ in the hash value instead of $ (Docker Compose escaping)
       - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_BASICAUTH_USERS}"
-      - "traefik.http.routers.clawmetry.middlewares=auth"
+      - "traefik.http.routers.clawmetry.middlewares=auth,stats-strip"
       - "traefik.http.services.clawmetry.loadbalancer.server.port=8900"
     restart: unless-stopped
     networks:

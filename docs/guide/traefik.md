@@ -1,9 +1,13 @@
 # Traefik + OpenClaw + ClawMetry (Internal Setup)
 
-This guide shows how to run **OpenClaw**, **[ClawMetry](https://clawmetry.com/)**, and **Traefik** together on a local network (home lab, LAN) using Docker Compose. Traefik acts as a reverse proxy on port 80 and protects both services with **HTTP Basic Auth** — so no one without the password can access them.
+This guide shows how to run **OpenClaw** and **[ClawMetry](https://clawmetry.com/)** together on a Raspberry Pi or home-lab machine using Traefik as a reverse proxy. Both services are served from a **single local hostname** on **HTTPS**, protected by a **login password**:
 
-> **This setup is designed for internal use only.** No public IP address, no domain name, and no TLS certificate are required.
-> If you want to expose the services publicly with HTTPS, refer to the [Traefik documentation](https://doc.traefik.io/traefik/) for Let's Encrypt configuration.
+| URL | Service |
+|---|---|
+| `https://openclaw.local` | OpenClaw gateway (Control UI) |
+| `https://openclaw.local/stats` | [ClawMetry](https://clawmetry.com/) dashboard |
+
+> **Internal use only.** Traefik generates a self-signed TLS certificate automatically — no public IP, no domain registration, and no Let's Encrypt required. Your browser will show a security warning on first visit; add a certificate exception once and you will not see it again.
 
 ## What you'll build
 
@@ -11,18 +15,19 @@ This guide shows how to run **OpenClaw**, **[ClawMetry](https://clawmetry.com/)*
 LAN
  │
  ▼
-Traefik (port 80) — password protected
- ├─ openclaw.local ──▶  OpenClaw gateway  (port 18789)
- └─ clawmetry.local ──▶  ClawMetry dashboard (port 8900)
+Traefik (port 80 → 443 redirect, HTTPS with self-signed cert)
+ │  — password protected (HTTP Basic Auth) —
+ ├─ openclaw.local        ──▶  OpenClaw gateway  (port 18789)
+ └─ openclaw.local/stats  ──▶  ClawMetry dashboard (port 8900)
 
 Both services share ~/.openclaw (read-only for ClawMetry)
 ```
 
 ## Prerequisites
 
-- A Linux machine on your local network
+- A Linux machine on your local network (e.g. a Raspberry Pi)
 - [Docker Engine](https://docs.docker.com/engine/install/) ≥ 24 and Docker Compose v2
-- `htpasswd` (from the `apache2-utils` package) **or** Docker (to generate the password hash)
+- `htpasswd` (from `apache2-utils`) **or** Docker (to generate the password hash)
 
 ## Step 1 — Run the OpenClaw onboarding wizard
 
@@ -101,20 +106,20 @@ admin:$2y$05$someLongHashStringHere...
 
 Copy the output and note it for the next step.
 
-## Step 4 — Add hostnames to `/etc/hosts`
+## Step 4 — Add the hostname to `/etc/hosts`
 
-Traefik routes requests by hostname. Add two entries to `/etc/hosts` on every machine that needs access to the services (replace `192.168.1.100` with your server's actual LAN IP address):
+Add one line to `/etc/hosts` on every machine that needs access to the services
+(replace `192.168.1.100` with your Pi's actual LAN IP address):
 
 ```
 192.168.1.100  openclaw.local
-192.168.1.100  clawmetry.local
 ```
 
 On Linux and macOS: `sudo nano /etc/hosts`
 
 On Windows: edit `C:\Windows\System32\drivers\etc\hosts` as Administrator.
 
-You can choose different hostnames — just keep them in sync with `OPENCLAW_DOMAIN` and `CLAWMETRY_DOMAIN` in your `.env` file.
+You can choose a different hostname — just keep it in sync with `DOMAIN` in your `.env` file.
 
 ## Step 5 — Create the `.env` file
 
@@ -127,9 +132,8 @@ cp /path/to/clawmetry-docker/.env.traefik.example .env
 Fill in your values (paste the escaped hash from Step 3 into `TRAEFIK_BASICAUTH_USERS`):
 
 ```bash
-# Hostnames — must match the entries you added to /etc/hosts
-OPENCLAW_DOMAIN=openclaw.local
-CLAWMETRY_DOMAIN=clawmetry.local
+# Local hostname — must match the entry you added to /etc/hosts
+DOMAIN=openclaw.local
 
 # Basic auth: paste your escaped bcrypt hash here ($ replaced with $$)
 TRAEFIK_BASICAUTH_USERS=admin:$$2y$$05$$yourHashHere...
@@ -153,15 +157,21 @@ Or create it with this content:
 ```yaml
 services:
 
-  # ─── Traefik reverse proxy (HTTP only) ──────────────────────────────────
+  # ─── Traefik reverse proxy ──────────────────────────────────────────────
   traefik:
     image: traefik:v3.0
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+      # Redirect HTTP → HTTPS
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      # HTTPS with auto-generated self-signed certificate (no certresolver)
+      - "--entrypoints.websecure.address=:443"
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     restart: unless-stopped
@@ -177,8 +187,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      - "traefik.http.routers.openclaw.rule=Host(`${OPENCLAW_DOMAIN}`)"
-      - "traefik.http.routers.openclaw.entrypoints=web"
+      - "traefik.http.routers.openclaw.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.openclaw.entrypoints=websecure"
+      - "traefik.http.routers.openclaw.tls=true"
       - "traefik.http.routers.openclaw.middlewares=auth@docker"
       - "traefik.http.services.openclaw.loadbalancer.server.port=18789"
     restart: unless-stopped
@@ -199,13 +210,19 @@ services:
     environment:
       OPENCLAW_DATA_DIR: /home/clawmetry/.openclaw
       OPENCLAW_USER: "${OPENCLAW_USER:-}"
+      # Tells ClawMetry it is mounted at /stats (for correct URL generation)
+      SCRIPT_NAME: "/stats"
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      - "traefik.http.routers.clawmetry.rule=Host(`${CLAWMETRY_DOMAIN}`)"
-      - "traefik.http.routers.clawmetry.entrypoints=web"
+      # PathPrefix rule has higher priority than the bare Host rule above
+      - "traefik.http.routers.clawmetry.rule=Host(`${DOMAIN}`) && PathPrefix(`/stats`)"
+      - "traefik.http.routers.clawmetry.entrypoints=websecure"
+      - "traefik.http.routers.clawmetry.tls=true"
+      # Strip /stats before forwarding to ClawMetry
+      - "traefik.http.middlewares.stats-strip.stripprefix.prefixes=/stats"
       - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_BASICAUTH_USERS}"
-      - "traefik.http.routers.clawmetry.middlewares=auth"
+      - "traefik.http.routers.clawmetry.middlewares=auth,stats-strip"
       - "traefik.http.services.clawmetry.loadbalancer.server.port=8900"
     restart: unless-stopped
     networks:
@@ -247,7 +264,13 @@ clawmetry-traefik-openclaw-gateway-1   alpine/openclaw:latest       Up
 clawmetry-traefik-clawmetry-1          stritti/clawmetry:latest     Up
 ```
 
-## Step 9 — Connect OpenClaw to the gateway
+## Step 9 — Accept the self-signed certificate
+
+Open `https://openclaw.local` in your browser. Because Traefik uses a self-signed certificate, your browser will show a security warning ("Your connection is not private" or similar).
+
+Click **Advanced → Proceed** (Chrome) or **Accept the Risk and Continue** (Firefox) to add a permanent exception. You only need to do this once per browser.
+
+## Step 10 — Connect OpenClaw to the gateway
 
 Fetch the Control UI URL and paste your gateway token into **Settings → Token**:
 
@@ -257,11 +280,11 @@ docker compose exec openclaw-gateway openclaw-cli dashboard --no-open
 
 Open the printed URL in your browser. When prompted by your browser (HTTP Basic Auth from Traefik), enter the username and password you set in Step 3. Once authenticated, you'll reach the OpenClaw Control UI — enter the gateway token from Step 1 in **Settings → Token**.
 
-## Step 10 — Open the ClawMetry dashboard
+## Step 11 — Open the ClawMetry dashboard
 
-Navigate to `http://clawmetry.local` (replace with the hostname you set in your `.env` and `/etc/hosts`).
+Navigate to `https://openclaw.local/stats` (replace `openclaw.local` with the `DOMAIN` you set).
 
-Your browser will show a login prompt — enter the username and password you chose in Step 3.
+Your browser will show the same login prompt — enter the username and password from Step 3.
 
 The [ClawMetry](https://clawmetry.com/) dashboard shows live metrics, session recordings, and logs streamed from the shared `~/.openclaw` directory.
 
@@ -270,6 +293,7 @@ The [ClawMetry](https://clawmetry.com/) dashboard shows live metrics, session re
 | Topic | Recommendation |
 |---|---|
 | Password protection | Both services are protected by Traefik HTTP Basic Auth — always set a strong password. |
+| Self-signed certificate | The TLS certificate is self-signed and will trigger a browser warning. Add an exception once. Never expose this setup on a public network. |
 | Non-root containers | Both ClawMetry and OpenClaw run as user `1000` — never add `privileged: true`. |
 | Read-only volume | ClawMetry mounts `~/.openclaw` with `:ro` — it cannot modify agent data. |
 | Internal network | The `internal` network has no direct internet routing — containers communicate with each other but external traffic must pass through Traefik. |
