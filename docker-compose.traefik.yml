@@ -1,56 +1,35 @@
 # docker-compose.traefik.yml
 #
-# Two supported setups — select one by following the inline comments:
+# Internal home lab / LAN setup: OpenClaw gateway + ClawMetry dashboard + Traefik
 #
-#   Public   — VPS / internet-facing server
-#              Set ACME_EMAIL in .env; requires public DNS + open ports 80 & 443.
-#              Traefik obtains TLS certificates from Let's Encrypt.
-#              Use the file as-is.
-#
-#   Internal — Home lab / LAN / not publicly accessible
-#              Leave ACME_EMAIL empty in .env.
-#              HTTP only, no TLS, no public domain required.
-#              Follow the "Internal setup" comments in this file and in
-#              docs/guide/traefik.md to remove the TLS configuration.
+# Traefik runs on port 80 (HTTP only, no TLS) and protects both services
+# with HTTP Basic Auth. No public IP or domain name required.
 #
 # Prerequisites:
 #   1. Copy .env.traefik.example to .env and fill in all required values.
-#   2. Run the OpenClaw onboarding wizard first (see docs/guide/traefik.md).
+#   2. Generate a bcrypt password hash — see docs/guide/traefik.md for instructions.
+#   3. Add local hostnames to /etc/hosts — see docs/guide/traefik.md Step 4.
+#   4. Run the OpenClaw onboarding wizard first — see docs/guide/traefik.md Step 1.
 #
 # Usage:
 #   docker compose -f docker-compose.traefik.yml up -d
 
 services:
 
-  # ─── Traefik reverse proxy ─────────────────────────────────────────────────
+  # ─── Traefik reverse proxy (HTTP only, no TLS) ─────────────────────────────
   traefik:
     image: traefik:v3.0
     command:
       # Discover services automatically via the Docker provider
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      # HTTP entry point (used by both setups)
+      # Single HTTP entry point — no HTTPS redirect, no Let's Encrypt
       - "--entrypoints.web.address=:80"
-      # ── Public setup only ────────────────────────────────────────────────
-      # Redirect HTTP → HTTPS and enable Let's Encrypt TLS.
-      # Comment out this block for an internal (HTTP-only) setup.
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      # ─────────────────────────────────────────────────────────────────────
     ports:
       - "80:80"
-      # Public setup only: expose HTTPS port.
-      # Remove or comment this line for an internal (HTTP-only) setup.
-      - "443:443"
     volumes:
       # Read-only Docker socket — Traefik watches containers for routing changes
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      # Persist TLS certificate data across container restarts (public setup)
-      - traefik-certs:/letsencrypt
     restart: unless-stopped
     networks:
       - proxy
@@ -68,12 +47,10 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       # Route ${OPENCLAW_DOMAIN} → OpenClaw gateway (port 18789)
-      # Public setup: use websecure (HTTPS) entry point with TLS cert resolver
       - "traefik.http.routers.openclaw.rule=Host(`${OPENCLAW_DOMAIN}`)"
-      - "traefik.http.routers.openclaw.entrypoints=websecure"
-      - "traefik.http.routers.openclaw.tls.certresolver=letsencrypt"
-      # Internal setup: replace the two lines above with the line below (HTTP only)
-      # - "traefik.http.routers.openclaw.entrypoints=web"
+      - "traefik.http.routers.openclaw.entrypoints=web"
+      # Reference the shared basic-auth middleware (defined via Docker labels on the clawmetry service)
+      - "traefik.http.routers.openclaw.middlewares=auth@docker"
       - "traefik.http.services.openclaw.loadbalancer.server.port=18789"
     restart: unless-stopped
     networks:
@@ -100,21 +77,17 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       # Route ${CLAWMETRY_DOMAIN} → ClawMetry dashboard (port 8900)
-      # Public setup: use websecure (HTTPS) entry point with TLS cert resolver
       - "traefik.http.routers.clawmetry.rule=Host(`${CLAWMETRY_DOMAIN}`)"
-      - "traefik.http.routers.clawmetry.entrypoints=websecure"
-      - "traefik.http.routers.clawmetry.tls.certresolver=letsencrypt"
-      # Internal setup: replace the two lines above with the line below (HTTP only)
-      # - "traefik.http.routers.clawmetry.entrypoints=web"
+      - "traefik.http.routers.clawmetry.entrypoints=web"
+      # Define the shared basic-auth middleware (credentials loaded from .env)
+      # Use $$ in the hash value instead of $ (Docker Compose escaping)
+      - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_BASICAUTH_USERS}"
+      - "traefik.http.routers.clawmetry.middlewares=auth"
       - "traefik.http.services.clawmetry.loadbalancer.server.port=8900"
     restart: unless-stopped
     networks:
       - proxy
       - internal
-
-volumes:
-  # Persists Traefik TLS certificates across container restarts
-  traefik-certs:
 
 networks:
   # External-facing network shared with Traefik
