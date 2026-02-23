@@ -113,6 +113,6 @@ services:
 networks:
   # External-facing network shared with Traefik
   proxy:
-  # Container-to-container communication only — no direct internet access
+  # Private container-to-container network (not externally attachable)
   internal:
     internal: true
