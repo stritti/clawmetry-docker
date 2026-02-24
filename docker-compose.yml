@@ -26,7 +26,7 @@ services:
     volumes:
       # Persist the full OpenClaw workspace on the host.
       # This directory holds agent config, memory files, session recordings,
-      # and log files — all shared (read-only) with the ClawMetry dashboard below.
+      # and log files — shared with the ClawMetry dashboard below (which should mount it read-only).
       # Default host path: ~/.openclaw  →  container path: /home/node/.openclaw
       - ~/.openclaw:/home/node/.openclaw
 
