@@ -108,7 +108,7 @@ services:
     ports:
       - "8900:8900"
     volumes:
-      - ~/.openclaw:/home/clawmetry/.openclaw
+      - ~/.openclaw:/home/clawmetry/.openclaw:ro
     environment:
       # Optional: explicitly set the OpenClaw data directory
       # OPENCLAW_DATA_DIR: /home/clawmetry/.openclaw
