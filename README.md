@@ -103,7 +103,7 @@ The `openclaw-cli` service runs the OpenClaw AI agent gateway.
 
 #### ClawMetry service
 
-The `clawmetry` service runs the observability dashboard.
+The `clawmetry` service runs the observability dashboard with read-only access to the OpenClaw workspace; it only reads (and never writes) agent data.
 
 The file mounts your local `~/.openclaw` workspace into the container so the dashboard
 can read logs, sessions, memory files, and metrics.
