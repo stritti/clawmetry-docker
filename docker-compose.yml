@@ -59,7 +59,7 @@ services:
       # Mount the local OpenClaw workspace so the dashboard can read logs,
       # sessions, memory files, and metrics.
       # Use the same host path as the openclaw-cli service above.
-      - ~/.openclaw:/home/clawmetry/.openclaw
+      - ~/.openclaw:/home/clawmetry/.openclaw:ro
     environment:
       # Optional: explicitly set the OpenClaw data directory
       # OPENCLAW_DATA_DIR: /home/clawmetry/.openclaw
