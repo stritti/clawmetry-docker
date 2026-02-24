@@ -69,7 +69,18 @@ docker run -p 8900:8900 \
 ### docker-compose
 
 An example [`docker-compose.yml`](docker-compose.yml) is included in this repository.
-Copy it to your project and start the service with:
+It defines two services: the **openclaw-cli** gateway and the **ClawMetry** dashboard.
+
+Before starting the stack for the first time, run the OpenClaw onboarding wizard to
+create your initial configuration in `~/.openclaw`:
+
+```bash
+docker run --rm -it \
+  -v ~/.openclaw:/home/node/.openclaw \
+  alpine/openclaw:latest openclaw-cli setup
+```
+
+Then start both services with:
 
 ```bash
 docker compose up -d
@@ -77,42 +88,36 @@ docker compose up -d
 
 Then open **http://localhost:8900** in your browser.
 
+#### openclaw-cli service
+
+The `openclaw-cli` service runs the OpenClaw AI agent gateway.
+
+| Setting | Description |
+|---|---|
+| `image` | `alpine/openclaw:latest` — official OpenClaw image |
+| `user` | `1000:1000` — non-root user for security |
+| `volumes` | `~/.openclaw:/home/node/.openclaw` — agent workspace (config, memory, sessions, logs) |
+| `ports` | `18789:18789` — agent gateway port; remove if not needed outside Docker |
+| `restart` | `unless-stopped` — auto-restarts on failure |
+| `deploy.resources.limits` | `cpus: 1.0`, `memory: 1G` — cap to prevent runaway processes |
+
+#### ClawMetry service
+
+The `clawmetry` service runs the observability dashboard.
+
 The file mounts your local `~/.openclaw` workspace into the container so the dashboard
 can read logs, sessions, memory files, and metrics.
 Uncomment the `environment` entries to customize the instance further:
 
-| Variable | Description |
-|---|---|
-| `OPENCLAW_HOME` | Path to the agent workspace directory |
-| `OPENCLAW_DATA_DIR` | OpenClaw data dir (auto-sets workspace, sessions, crons) |
-| `OPENCLAW_LOG_DIR` | Directory containing agent log files |
-| `OPENCLAW_SESSIONS_DIR` | Directory containing session `.jsonl` files |
-| `OPENCLAW_USER` | Your name shown in the Flow tab |
-| `MC_URL` | Mission Control URL (disabled by default) |
-| `CLAWMETRY_FLEET_KEY` | API key for multi-node fleet authentication |
-
-Full `docker-compose.yml`:
-
-```yaml
-services:
-  clawmetry:
-    image: stritti/clawmetry:latest
-    ports:
-      # Map host port 8900 to container port 8900 (clawmetry web UI)
-      - "8900:8900"
-    volumes:
-      # Mount the local OpenClaw workspace so the dashboard can read logs,
-      # sessions, memory files, and metrics.
-      - ~/.openclaw:/home/clawmetry/.openclaw
-    environment:
-      # Optional: explicitly set the OpenClaw data directory
-      # OPENCLAW_DATA_DIR: /home/clawmetry/.openclaw
-      # Optional: show your name in the Flow tab
-      # OPENCLAW_USER: "Your Name"
-      # Optional: Mission Control URL
-      # MC_URL: "https://your-mission-control"
-    restart: unless-stopped
-```
+| Variable | CLI equivalent | Description |
+|---|---|---|
+| `OPENCLAW_HOME` | `--workspace` | Path to the agent workspace directory |
+| `OPENCLAW_DATA_DIR` | `--data-dir` | OpenClaw data dir (auto-sets workspace, sessions, crons) |
+| `OPENCLAW_LOG_DIR` | `--log-dir` | Directory containing agent log files |
+| `OPENCLAW_SESSIONS_DIR` | `--sessions-dir` | Directory containing session `.jsonl` files |
+| `OPENCLAW_USER` | `--name` | Your name shown in the Flow tab |
+| `MC_URL` | `--mc-url` | Mission Control URL (disabled by default) |
+| `CLAWMETRY_FLEET_KEY` | `--fleet-api-key` | API key for multi-node fleet authentication |
 
 ### Available tags
 
