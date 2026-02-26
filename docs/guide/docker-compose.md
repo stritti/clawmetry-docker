@@ -66,6 +66,44 @@ The file mounts your local `~/.openclaw` workspace into the container so the [Cl
 can read logs, sessions, memory files, and metrics.
 Uncomment the `environment` entries to customize the instance further.
 
+## Shell wrapper for openclaw-cli
+
+The included [`openclaw-cli.sh`](https://github.com/stritti/clawmetry-docker/blob/main/openclaw-cli.sh) wrapper lets you call any `openclaw-cli` subcommand directly from your Linux/macOS shell — no need to type the full `docker` invocation each time.
+
+**How it works:**
+- If the Compose stack is running (`docker compose up`), the wrapper executes the command inside the live `openclaw-cli` container via `docker compose exec`.
+- Otherwise it spins up a temporary one-off container (`docker run --rm -it`) with your `~/.openclaw` workspace mounted.
+
+### Install
+
+```bash
+sudo cp openclaw-cli.sh /usr/local/bin/openclaw-cli
+sudo chmod +x /usr/local/bin/openclaw-cli
+```
+
+### Usage examples
+
+```bash
+# Run the interactive onboarding wizard
+openclaw-cli setup
+
+# Show gateway status
+openclaw-cli status
+
+# List session recordings
+openclaw-cli session list
+
+# Open the Control UI (print URL without opening a browser)
+openclaw-cli dashboard --no-open
+```
+
+### Environment variable overrides
+
+| Variable | Default | Description |
+|---|---|---|
+| `OPENCLAW_HOME` | `~/.openclaw` | Host path to the OpenClaw workspace |
+| `OPENCLAW_IMAGE` | `alpine/openclaw:latest` | Docker image used for one-off containers (when the stack is not running) |
+
 ## Environment variables in docker-compose
 
 All environment variables supported by [ClawMetry](https://clawmetry.com/) can be used in your `docker-compose.yml`:

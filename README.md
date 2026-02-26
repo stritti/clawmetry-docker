@@ -119,6 +119,44 @@ Uncomment the `environment` entries to customize the instance further:
 | `MC_URL` | `--mc-url` | Mission Control URL (disabled by default) |
 | `CLAWMETRY_FLEET_KEY` | `--fleet-api-key` | API key for multi-node fleet authentication |
 
+#### Shell wrapper for openclaw-cli
+
+The included [`openclaw-cli.sh`](openclaw-cli.sh) wrapper lets you call any `openclaw-cli` subcommand directly from your Linux/macOS shell — no need to type the full `docker` invocation each time.
+
+**How it works:**
+- If the Compose stack is running (`docker compose up`), the wrapper executes the command inside the live `openclaw-cli` container via `docker compose exec`.
+- Otherwise it spins up a temporary container (`docker run --rm -it`) with your `~/.openclaw` workspace mounted.
+
+**Quick start (one-time install):**
+
+```bash
+sudo cp openclaw-cli.sh /usr/local/bin/openclaw-cli
+sudo chmod +x /usr/local/bin/openclaw-cli
+```
+
+**Usage examples:**
+
+```bash
+# Run the interactive onboarding wizard
+openclaw-cli setup
+
+# Show gateway status
+openclaw-cli status
+
+# List session recordings
+openclaw-cli session list
+
+# Open the Control UI (print URL without opening a browser)
+openclaw-cli dashboard --no-open
+```
+
+**Override defaults with environment variables:**
+
+| Variable | Default | Description |
+|---|---|---|
+| `OPENCLAW_HOME` | `~/.openclaw` | Host path to the OpenClaw workspace |
+| `OPENCLAW_IMAGE` | `alpine/openclaw:latest` | Docker image used for one-off containers |
+
 ### Available tags
 
 The same tags are published to both registries:
