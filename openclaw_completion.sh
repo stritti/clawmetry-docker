@@ -62,4 +62,7 @@ _openclaw_complete() {
 }
 
 # Register the completion function for the `openclaw` command
-complete -F _openclaw_complete openclaw
+# Only attempt registration when Bash (or a shell providing `complete`) is active.
+if [ -n "$BASH_VERSION" ] || command -v complete >/dev/null 2>&1; then
+    complete -F _openclaw_complete openclaw
+fi
