@@ -31,6 +31,8 @@ while [ $# -gt 0 ]; do
             export MC_URL="$2"; shift 2 ;;
         --fleet-api-key)
             export CLAWMETRY_FLEET_KEY="$2"; shift 2 ;;
+        --fleet-db-path)
+            export FLEET_DB_PATH="$2"; shift 2 ;;
         --no-debug|--debug)
             # Debug mode is not applicable under gunicorn; silently ignore.
             shift ;;
@@ -40,7 +42,30 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-exec /venv/bin/gunicorn \
+# Ensure HOME is set correctly for the non-root user.
+export HOME=/home/clawmetry
+export OPENCLAW_HOME="${OPENCLAW_HOME:-/home/clawmetry/.openclaw}"
+
+# The container starts as root. We ensure the data directory exists and
+# has the correct permissions before dropping privileges.
+DATA_DIR="${OPENCLAW_DATA_DIR:-/home/clawmetry/.openclaw}"
+echo "Fixing permissions for $DATA_DIR..."
+mkdir -p "$DATA_DIR"
+chown -R clawmetry:clawmetry "$DATA_DIR"
+ls -ld "$DATA_DIR"
+ls -la "$DATA_DIR"
+
+# Also ensure the fleet DB directory exists if FLEET_DB_PATH is set.
+if [ -n "$FLEET_DB_PATH" ]; then
+    echo "Fixing permissions for fleet DB at $FLEET_DB_PATH..."
+    DB_DIR=$(dirname "$FLEET_DB_PATH")
+    mkdir -p "$DB_DIR"
+    chown -R clawmetry:clawmetry "$DB_DIR"
+    ls -ld "$DB_DIR"
+fi
+
+echo "Starting gunicorn with gosu clawmetry..."
+exec gosu clawmetry /venv/bin/gunicorn \
     --bind "${HOST}:${PORT}" \
     --workers 1 \
     --threads 16 \

@@ -19,6 +19,11 @@ COPY --from=builder /venv /venv
 # Create a non-root user to run the application.
 RUN useradd -m -u 1000 clawmetry
 
+# Install gosu to drop privileges safely.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gosu && \
+    rm -rf /var/lib/apt/lists/*
+
 # Create the default OpenClaw data directory so the container starts
 # without requiring a volume mount (clawmetry auto-detects ~/.openclaw).
 RUN mkdir -p /home/clawmetry/.openclaw && \
@@ -35,7 +40,8 @@ COPY wsgi.py .
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-USER clawmetry
+# The container will start as root to allow entrypoint.sh to fix permissions.
+# It will then use 'gosu' to step down to the 'clawmetry' user.
 
 EXPOSE 8900
 
