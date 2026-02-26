@@ -56,11 +56,39 @@ elif command -v sudo >/dev/null 2>&1; then
     USE_SUDO=1
 else
     INSTALL_DIR="$HOME/.local/bin"
-    mkdir -p "$INSTALL_DIR"
     warn "No write access to /usr/local/bin and sudo not found."
     warn "Installing to $INSTALL_DIR — make sure it is in your PATH."
 fi
 
+# Ensure install directory exists and is writable
+if [ ! -d "$INSTALL_DIR" ]; then
+    if [ -n "$USE_SUDO" ]; then
+        info "Creating install directory $INSTALL_DIR with sudo …"
+        if ! sudo mkdir -p "$INSTALL_DIR"; then
+            die "Failed to create install directory $INSTALL_DIR with sudo."
+        fi
+    else
+        if ! mkdir -p "$INSTALL_DIR" 2>/dev/null; then
+            if command -v sudo >/dev/null 2>&1; then
+                info "Creating install directory $INSTALL_DIR with sudo …"
+                if ! sudo mkdir -p "$INSTALL_DIR"; then
+                    die "Failed to create install directory $INSTALL_DIR with sudo."
+                fi
+                USE_SUDO=1
+            else
+                die "Cannot create install directory $INSTALL_DIR; check permissions."
+            fi
+        fi
+    fi
+fi
+
+if [ ! -w "$INSTALL_DIR" ]; then
+    if command -v sudo >/dev/null 2>&1; then
+        USE_SUDO=1
+    else
+        die "Install directory $INSTALL_DIR is not writable and sudo is not available."
+    fi
+fi
 # ── Install openclaw wrapper ──────────────────────────────────────────────────
 
 info "Downloading openclaw wrapper …"
