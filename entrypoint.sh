@@ -48,20 +48,25 @@ export OPENCLAW_HOME="${OPENCLAW_HOME:-/home/clawmetry/.openclaw}"
 
 # The container starts as root. We ensure the data directory exists and
 # has the correct permissions before dropping privileges.
+# We intentionally do NOT recurse into existing content to avoid mutating
+# host-side ownership when DATA_DIR is a bind mount where the host user's
+# UID differs from the container's 'clawmetry' user (UID 1000).
 DATA_DIR="${OPENCLAW_DATA_DIR:-/home/clawmetry/.openclaw}"
-echo "Fixing permissions for $DATA_DIR..."
 mkdir -p "$DATA_DIR"
-chown -R clawmetry:clawmetry "$DATA_DIR"
-ls -ld "$DATA_DIR"
-ls -la "$DATA_DIR"
+# Only fix ownership when the directory is still owned by root (e.g. just
+# created above or a brand-new Docker-managed volume). This preserves the
+# original ownership on pre-existing bind mounts.
+if [ "$(stat -c '%u' "$DATA_DIR")" = "0" ]; then
+    chown clawmetry:clawmetry "$DATA_DIR"
+fi
 
 # Also ensure the fleet DB directory exists if FLEET_DB_PATH is set.
 if [ -n "$FLEET_DB_PATH" ]; then
-    echo "Fixing permissions for fleet DB at $FLEET_DB_PATH..."
     DB_DIR=$(dirname "$FLEET_DB_PATH")
     mkdir -p "$DB_DIR"
-    chown -R clawmetry:clawmetry "$DB_DIR"
-    ls -ld "$DB_DIR"
+    if [ "$(stat -c '%u' "$DB_DIR")" = "0" ]; then
+        chown clawmetry:clawmetry "$DB_DIR"
+    fi
 fi
 
 echo "Starting gunicorn with gosu clawmetry..."
