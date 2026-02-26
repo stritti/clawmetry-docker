@@ -1,4 +1,53 @@
 services:
+
+  # ─── openclaw-cli ─────────────────────────────────────────────────────────
+  # The OpenClaw AI agent gateway and CLI tool.
+  #
+  # Run the interactive onboarding wizard once before starting this service
+  # to create your initial configuration in ~/.openclaw:
+  #
+  #   docker run --rm -it \
+  #     -v ~/.openclaw:/home/node/.openclaw \
+  #     alpine/openclaw:latest openclaw-cli setup
+  #
+  # After onboarding, start the full stack with:
+  #   docker compose up -d
+  openclaw-cli:
+    # Official OpenClaw image from Docker Hub (Alpine-based, minimal footprint).
+    # Pin to a specific version tag (e.g. alpine/openclaw:1.2.3) for reproducible
+    # deployments; use "latest" for automatic updates.
+    image: alpine/openclaw:latest
+
+    # Run as non-root user 1000:1000 (principle of least privilege).
+    # If your ~/.openclaw directory is owned by a different UID, fix it first:
+    #   sudo chown -R 1000:1000 ~/.openclaw
+    user: "1000:1000"
+
+    volumes:
+      # Persist the full OpenClaw workspace on the host.
+      # This directory holds agent config, memory files, session recordings,
+      # and log files — shared with the ClawMetry dashboard below (which should mount it read-only).
+      # Default host path: ~/.openclaw  →  container path: /home/node/.openclaw
+      - ~/.openclaw:/home/node/.openclaw
+
+    ports:
+      # OpenClaw gateway listens on port 18789 for connected AI agent clients.
+      # Remove or comment out this mapping if you do not need direct host access
+      # (e.g. when routing through a reverse proxy such as Traefik).
+      - "18789:18789"
+
+    restart: unless-stopped
+
+    deploy:
+      resources:
+        limits:
+          # Prevent a runaway agent process from consuming all available CPU.
+          # Increase if your workload requires more parallelism.
+          cpus: "1.0"
+          # Hard memory cap — adjust to match your host's available RAM.
+          memory: 1G
+
+  # ─── ClawMetry dashboard ───────────────────────────────────────────────────
   clawmetry:
     image: stritti/clawmetry:latest
     # Alternatively use the GitHub Container Registry image:
@@ -9,7 +58,8 @@ services:
     volumes:
       # Mount the local OpenClaw workspace so the dashboard can read logs,
       # sessions, memory files, and metrics.
-      - ~/.openclaw:/home/clawmetry/.openclaw
+      # Use the same host path as the openclaw-cli service above.
+      - ~/.openclaw:/home/clawmetry/.openclaw:ro
     environment:
       # Optional: explicitly set the OpenClaw data directory
       # OPENCLAW_DATA_DIR: /home/clawmetry/.openclaw
@@ -17,4 +67,6 @@ services:
       # OPENCLAW_USER: "Your Name"
       # Optional: Mission Control URL
       # MC_URL: "https://your-mission-control"
+      # Optional: API key for multi-node fleet authentication
+      # CLAWMETRY_FLEET_KEY: "your-api-key"
     restart: unless-stopped
