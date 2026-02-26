@@ -107,8 +107,10 @@ case "$DETECTED_SHELL" in
             COMP_DEST="/etc/bash_completion.d/openclaw"
             if [ -n "$USE_SUDO" ]; then
                 sudo mv "$TMP_COMP" "$COMP_DEST"
+                sudo chmod 644 "$COMP_DEST"
             else
                 mv "$TMP_COMP" "$COMP_DEST"
+                chmod 644 "$COMP_DEST"
             fi
             ok "Installed completion → $COMP_DEST (open a new shell to activate)"
         else
