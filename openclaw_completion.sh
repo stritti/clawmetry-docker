@@ -1,6 +1,8 @@
 # openclaw_completion.sh — Shell completion for the openclaw wrapper
 #
-# Provides tab-completion for the `openclaw` command in both Bash and Zsh.
+# Provides native tab-completion in Bash (via complete/compgen) and
+# Zsh (via compdef/_describe).  The correct branch activates automatically
+# based on the shell that sources this file.
 #
 # Installation
 # ────────────
@@ -11,22 +13,59 @@
 # Bash (per-user, add to ~/.bashrc):
 #   source /path/to/openclaw_completion.sh
 #
-# Zsh (system-wide via bashcompinit):
-#   sudo cp openclaw_completion.sh /usr/local/share/openclaw_completion.sh
-#   # Then, in a system-wide Zsh config (e.g. /etc/zsh/zshrc or /etc/zshrc), add:
-#   #   autoload -U +X bashcompinit && bashcompinit
-#   #   source /usr/local/share/openclaw_completion.sh
-#
-# Zsh (per-user via bashcompinit, add to ~/.zshrc):
-#   autoload -U +X bashcompinit && bashcompinit
+# Zsh (per-user, add to ~/.zshrc):
 #   source /path/to/openclaw_completion.sh
+#
+# Zsh (system-wide, add to a system-wide config, e.g. /etc/zsh/zshrc):
+#   source /usr/local/share/openclaw_completion.sh
 
 # ── Subcommands and their options ────────────────────────────────────────────
 _OPENCLAW_SUBCOMMANDS="setup status session dashboard"
 _OPENCLAW_SESSION_SUBCMDS="list show export"
 _OPENCLAW_DASHBOARD_FLAGS="--no-open"
 
-# ── Bash completion function ──────────────────────────────────────────────────
+# ── Zsh native completion ─────────────────────────────────────────────────────
+if [ -n "$ZSH_VERSION" ]; then
+    _openclaw() {
+        local state
+        _arguments \
+            '1: :->subcmd' \
+            '*: :->args'
+
+        case $state in
+            subcmd)
+                local -a subcmds
+                subcmds=(
+                    'setup:Run the interactive onboarding wizard'
+                    'status:Show gateway status'
+                    'session:Manage session recordings'
+                    'dashboard:Open or print the Control UI URL'
+                )
+                _describe 'subcommand' subcmds
+                ;;
+            args)
+                case ${words[2]} in
+                    session)
+                        local -a session_cmds
+                        session_cmds=(
+                            'list:List session recordings'
+                            'show:Show a session recording'
+                            'export:Export a session recording'
+                        )
+                        _describe 'session subcommand' session_cmds
+                        ;;
+                    dashboard)
+                        _arguments '--no-open[Print URL without opening a browser]'
+                        ;;
+                esac
+                ;;
+        esac
+    }
+    compdef _openclaw openclaw
+    return 0
+fi
+
+# ── Bash native completion ────────────────────────────────────────────────────
 _openclaw_complete() {
     local cur prev words cword
     # Use _init_completion if available (bash-completion ≥ 2.x), fall back otherwise

@@ -83,7 +83,7 @@ sudo chmod +x /usr/local/bin/openclaw
 
 ### Shell autocomplete
 
-The included [`openclaw_completion.sh`](https://github.com/stritti/clawmetry-docker/blob/main/openclaw_completion.sh) adds tab-completion for subcommands and flags in **Bash** and **Zsh**.
+The included [`openclaw_completion.sh`](https://github.com/stritti/clawmetry-docker/blob/main/openclaw_completion.sh) adds native tab-completion for subcommands and flags in **Bash** and **Zsh** — the correct branch activates automatically based on which shell sources the file.
 
 ```bash
 # Bash (system-wide — open a new shell afterwards):
@@ -92,12 +92,12 @@ sudo cp openclaw_completion.sh /etc/bash_completion.d/openclaw
 # Bash (per-user — add to ~/.bashrc):
 echo 'source /path/to/openclaw_completion.sh' >> ~/.bashrc
 
-# Zsh (system-wide — open a new shell afterwards):
-sudo cp openclaw_completion.sh /usr/local/share/zsh/site-functions/_openclaw
-
-# Zsh (per-user via bashcompinit — add to ~/.zshrc):
-echo 'autoload -U +X bashcompinit && bashcompinit' >> ~/.zshrc
+# Zsh (per-user — add to ~/.zshrc):
 echo 'source /path/to/openclaw_completion.sh' >> ~/.zshrc
+
+# Zsh (system-wide — add to a system-wide config, e.g. /etc/zsh/zshrc):
+sudo cp openclaw_completion.sh /usr/local/share/openclaw_completion.sh
+# Then add to /etc/zsh/zshrc: source /usr/local/share/openclaw_completion.sh
 ```
 
 After enabling autocomplete, press **Tab** after `openclaw` to complete subcommands and flags:

@@ -143,12 +143,12 @@ sudo cp openclaw_completion.sh /etc/bash_completion.d/openclaw
 # Bash (per-user — add to ~/.bashrc):
 echo 'source /path/to/openclaw_completion.sh' >> ~/.bashrc
 
-# Zsh (system-wide — open a new shell afterwards):
-sudo cp openclaw_completion.sh /usr/local/share/zsh/site-functions/_openclaw
-
-# Zsh (per-user via bashcompinit — add to ~/.zshrc):
-echo 'autoload -U +X bashcompinit && bashcompinit' >> ~/.zshrc
+# Zsh (per-user — add to ~/.zshrc):
 echo 'source /path/to/openclaw_completion.sh' >> ~/.zshrc
+
+# Zsh (system-wide — add to a system-wide config, e.g. /etc/zsh/zshrc):
+sudo cp openclaw_completion.sh /usr/local/share/openclaw_completion.sh
+# Then add to /etc/zsh/zshrc: source /usr/local/share/openclaw_completion.sh
 ```
 
 After enabling autocomplete, press **Tab** after `openclaw` to complete subcommands and flags:

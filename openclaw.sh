@@ -16,8 +16,8 @@
 # Enable shell autocomplete after installation:
 #   # Bash:
 #   sudo cp openclaw_completion.sh /etc/bash_completion.d/openclaw
-#   # Zsh:
-#   sudo cp openclaw_completion.sh /usr/local/share/zsh/site-functions/_openclaw
+#   # Zsh (per-user, add to ~/.zshrc):
+#   echo 'source /path/to/openclaw_completion.sh' >> ~/.zshrc
 #
 # After installation you can call openclaw directly from any directory:
 #   openclaw status
@@ -39,7 +39,13 @@ OPENCLAW_IMAGE="${OPENCLAW_IMAGE:-alpine/openclaw:latest}"
 # current directory.  If Docker itself is not installed, the "docker run"
 # below will fail with a clear error message from Docker.
 if docker compose ps --services --filter "status=running" 2>/dev/null | grep -q "^openclaw-cli$"; then
-    exec docker compose exec openclaw-cli openclaw-cli "$@"
+    # Pass -T when stdout is not a TTY (e.g., CI or piped output) to avoid
+    # "the input device is not a TTY" errors from docker compose exec.
+    if [ -t 1 ]; then
+        exec docker compose exec openclaw-cli openclaw-cli "$@"
+    else
+        exec docker compose exec -T openclaw-cli openclaw-cli "$@"
+    fi
 fi
 
 # Otherwise fall back to a temporary one-off container with the same workspace
