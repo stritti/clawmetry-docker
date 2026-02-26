@@ -64,7 +64,7 @@ fi
 # ── Install openclaw wrapper ──────────────────────────────────────────────────
 
 info "Downloading openclaw wrapper …"
-TMP_WRAPPER="$(mktemp)"
+TMP_WRAPPER="$(mktemp "${TMPDIR:-/tmp}/openclaw.XXXXXX")"
 download "${BASE_URL}/openclaw.sh" "$TMP_WRAPPER"
 chmod 755 "$TMP_WRAPPER"
 
