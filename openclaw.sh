@@ -44,6 +44,17 @@ fi
 
 # Otherwise fall back to a temporary one-off container with the same workspace
 # volume mount.  The container is removed automatically after the command exits.
-exec docker run --rm -it \
+docker_run_opts="--rm"
+
+# Only allocate stdin/stdout TTYs when appropriate to avoid failures in
+# non-interactive environments (e.g., CI, piped output).
+if [ -t 0 ]; then
+    docker_run_opts="$docker_run_opts -i"
+fi
+if [ -t 1 ]; then
+    docker_run_opts="$docker_run_opts -t"
+fi
+
+exec docker run $docker_run_opts \
     -v "$OPENCLAW_HOME:/home/node/.openclaw" \
     "$OPENCLAW_IMAGE" openclaw-cli "$@"
