@@ -1,20 +1,26 @@
 #!/bin/sh
-# openclaw-cli.sh — Shell wrapper that forwards openclaw-cli commands to Docker
+# openclaw.sh — Shell wrapper that forwards openclaw commands to Docker
 #
 # Usage:
-#   ./openclaw-cli.sh <command> [args...]
+#   ./openclaw.sh <command> [args...]
 #
 # Examples:
-#   ./openclaw-cli.sh status
-#   ./openclaw-cli.sh session list
-#   ./openclaw-cli.sh dashboard --no-open
+#   ./openclaw.sh status
+#   ./openclaw.sh session list
+#   ./openclaw.sh dashboard --no-open
 #
 # Install system-wide (optional):
-#   sudo cp openclaw-cli.sh /usr/local/bin/openclaw-cli
-#   sudo chmod +x /usr/local/bin/openclaw-cli
+#   sudo cp openclaw.sh /usr/local/bin/openclaw
+#   sudo chmod +x /usr/local/bin/openclaw
 #
-# After installation you can call openclaw-cli directly from any directory:
-#   openclaw-cli status
+# Enable shell autocomplete after installation:
+#   # Bash:
+#   sudo cp openclaw_completion.sh /etc/bash_completion.d/openclaw
+#   # Zsh:
+#   sudo cp openclaw_completion.sh /usr/local/share/zsh/site-functions/_openclaw
+#
+# After installation you can call openclaw directly from any directory:
+#   openclaw status
 #
 # Environment variables (override defaults):
 #   OPENCLAW_HOME   — host path to the OpenClaw workspace (default: ~/.openclaw)

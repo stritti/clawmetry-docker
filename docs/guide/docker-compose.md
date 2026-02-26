@@ -66,9 +66,9 @@ The file mounts your local `~/.openclaw` workspace into the container so the [Cl
 can read logs, sessions, memory files, and metrics.
 Uncomment the `environment` entries to customize the instance further.
 
-## Shell wrapper for openclaw-cli
+## Shell wrapper for openclaw
 
-The included [`openclaw-cli.sh`](https://github.com/stritti/clawmetry-docker/blob/main/openclaw-cli.sh) wrapper lets you call any `openclaw-cli` subcommand directly from your Linux/macOS shell — no need to type the full `docker` invocation each time.
+The included [`openclaw.sh`](https://github.com/stritti/clawmetry-docker/blob/main/openclaw.sh) wrapper lets you call any `openclaw` subcommand directly from your Linux/macOS shell — no need to type the full `docker` invocation each time.
 
 **How it works:**
 - If the Compose stack is running (`docker compose up`), the wrapper executes the command inside the live `openclaw-cli` container via `docker compose exec`.
@@ -77,24 +77,51 @@ The included [`openclaw-cli.sh`](https://github.com/stritti/clawmetry-docker/blo
 ### Install
 
 ```bash
-sudo cp openclaw-cli.sh /usr/local/bin/openclaw-cli
-sudo chmod +x /usr/local/bin/openclaw-cli
+sudo cp openclaw.sh /usr/local/bin/openclaw
+sudo chmod +x /usr/local/bin/openclaw
+```
+
+### Shell autocomplete
+
+The included [`openclaw_completion.sh`](https://github.com/stritti/clawmetry-docker/blob/main/openclaw_completion.sh) adds tab-completion for subcommands and flags in **Bash** and **Zsh**.
+
+```bash
+# Bash (system-wide — open a new shell afterwards):
+sudo cp openclaw_completion.sh /etc/bash_completion.d/openclaw
+
+# Bash (per-user — add to ~/.bashrc):
+echo 'source /path/to/openclaw_completion.sh' >> ~/.bashrc
+
+# Zsh (system-wide — open a new shell afterwards):
+sudo cp openclaw_completion.sh /usr/local/share/zsh/site-functions/_openclaw
+
+# Zsh (per-user via bashcompinit — add to ~/.zshrc):
+echo 'autoload -U +X bashcompinit && bashcompinit' >> ~/.zshrc
+echo 'source /path/to/openclaw_completion.sh' >> ~/.zshrc
+```
+
+After enabling autocomplete, press **Tab** after `openclaw` to complete subcommands and flags:
+
+```
+openclaw <Tab>           → setup  status  session  dashboard
+openclaw session <Tab>   → list  show  export
+openclaw dashboard <Tab> → --no-open
 ```
 
 ### Usage examples
 
 ```bash
 # Run the interactive onboarding wizard
-openclaw-cli setup
+openclaw setup
 
 # Show gateway status
-openclaw-cli status
+openclaw status
 
 # List session recordings
-openclaw-cli session list
+openclaw session list
 
 # Open the Control UI (print URL without opening a browser)
-openclaw-cli dashboard --no-open
+openclaw dashboard --no-open
 ```
 
 ### Environment variable overrides
