@@ -11,9 +11,11 @@
 # Bash (per-user, add to ~/.bashrc):
 #   source /path/to/openclaw_completion.sh
 #
-# Zsh (system-wide):
-#   sudo cp openclaw_completion.sh /usr/local/share/zsh/site-functions/_openclaw
-#   # Then open a new shell or run: autoload -U compinit && compinit
+# Zsh (system-wide via bashcompinit):
+#   sudo cp openclaw_completion.sh /usr/local/share/openclaw_completion.sh
+#   # Then, in a system-wide Zsh config (e.g. /etc/zsh/zshrc or /etc/zshrc), add:
+#   #   autoload -U +X bashcompinit && bashcompinit
+#   #   source /usr/local/share/openclaw_completion.sh
 #
 # Zsh (per-user via bashcompinit, add to ~/.zshrc):
 #   autoload -U +X bashcompinit && bashcompinit
