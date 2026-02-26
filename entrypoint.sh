@@ -56,7 +56,9 @@ mkdir -p "$DATA_DIR"
 # Only fix ownership when the directory is still owned by root (e.g. just
 # created above or a brand-new Docker-managed volume). This preserves the
 # original ownership on pre-existing bind mounts.
-if [ "$(stat -c '%u' "$DATA_DIR")" = "0" ]; then
+# Safety guard: never chown '/' or an empty path.
+if [ -n "$DATA_DIR" ] && [ "$DATA_DIR" != "/" ] && \
+   [ "$(stat -c '%u' "$DATA_DIR")" = "0" ]; then
     chown clawmetry:clawmetry "$DATA_DIR"
 fi
 
@@ -64,7 +66,10 @@ fi
 if [ -n "$FLEET_DB_PATH" ]; then
     DB_DIR=$(dirname "$FLEET_DB_PATH")
     mkdir -p "$DB_DIR"
-    if [ "$(stat -c '%u' "$DB_DIR")" = "0" ]; then
+    # Safety guard: never chown '/' (e.g. FLEET_DB_PATH='/fleet.db'),
+    # '.' (relative path), or an empty string.
+    if [ -n "$DB_DIR" ] && [ "$DB_DIR" != "/" ] && [ "$DB_DIR" != "." ] && \
+       [ "$(stat -c '%u' "$DB_DIR")" = "0" ]; then
         chown clawmetry:clawmetry "$DB_DIR"
     fi
 fi
