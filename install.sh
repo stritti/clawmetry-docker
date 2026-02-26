@@ -66,14 +66,15 @@ fi
 info "Downloading openclaw wrapper …"
 TMP_WRAPPER="$(mktemp)"
 download "${BASE_URL}/openclaw.sh" "$TMP_WRAPPER"
-chmod +x "$TMP_WRAPPER"
+chmod 755 "$TMP_WRAPPER"
 
 WRAPPER_DEST="${INSTALL_DIR}/openclaw"
 if [ -n "$USE_SUDO" ]; then
     sudo mv "$TMP_WRAPPER" "$WRAPPER_DEST"
-    sudo chmod +x "$WRAPPER_DEST"
+    sudo chmod 755 "$WRAPPER_DEST"
 else
     mv "$TMP_WRAPPER" "$WRAPPER_DEST"
+    chmod 755 "$WRAPPER_DEST"
 fi
 ok "Installed wrapper → $WRAPPER_DEST"
 
