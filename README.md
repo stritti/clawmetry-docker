@@ -127,7 +127,13 @@ The included [`openclaw.sh`](openclaw.sh) wrapper lets you call any `openclaw` s
 - If the Compose stack is running (`docker compose up`), the wrapper executes the command inside the live `openclaw-cli` container via `docker compose exec`.
 - Otherwise it spins up a temporary container (`docker run --rm -it`) with your `~/.openclaw` workspace mounted.
 
-**Quick start (one-time install):**
+**One-line install (downloads wrapper + autocomplete, detects your shell):**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/stritti/clawmetry-docker/main/install.sh | bash
+```
+
+**Manual install:**
 
 ```bash
 sudo cp openclaw.sh /usr/local/bin/openclaw

@@ -76,6 +76,14 @@ The included [`openclaw.sh`](https://github.com/stritti/clawmetry-docker/blob/ma
 
 ### Install
 
+**One-line install** (downloads wrapper + autocomplete and detects your shell automatically):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/stritti/clawmetry-docker/main/install.sh | bash
+```
+
+**Manual install:**
+
 ```bash
 sudo cp openclaw.sh /usr/local/bin/openclaw
 sudo chmod +x /usr/local/bin/openclaw
