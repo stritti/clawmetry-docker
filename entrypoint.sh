@@ -65,10 +65,15 @@ fi
 # Also ensure the fleet DB directory exists if FLEET_DB_PATH is set.
 if [ -n "$FLEET_DB_PATH" ]; then
     DB_DIR=$(dirname "$FLEET_DB_PATH")
+    # Normalise DB_DIR to an absolute path when FLEET_DB_PATH is relative.
+    case "$DB_DIR" in
+        /*) ;;
+        *) DB_DIR="$HOME/$DB_DIR" ;;
+    esac
     mkdir -p "$DB_DIR"
-    # Safety guard: never chown '/' (e.g. FLEET_DB_PATH='/fleet.db'),
-    # '.' (relative path), or an empty string.
-    if [ -n "$DB_DIR" ] && [ "$DB_DIR" != "/" ] && [ "$DB_DIR" != "." ] && \
+    # Safety guard: never chown '/' (e.g. FLEET_DB_PATH='/fleet.db')
+    # or an empty string.
+    if [ -n "$DB_DIR" ] && [ "$DB_DIR" != "/" ] && \
        [ "$(stat -c '%u' "$DB_DIR")" = "0" ]; then
         chown clawmetry:clawmetry "$DB_DIR"
     fi
