@@ -43,7 +43,7 @@ while [ $# -gt 0 ]; do
 done
 
 # Ensure HOME is set correctly for the non-root user.
-export HOME=/home/clawmetry
+export HOME="${HOME:-/home/clawmetry}"
 export OPENCLAW_HOME="${OPENCLAW_HOME:-/home/clawmetry/.openclaw}"
 
 # The container starts as root. We ensure the data directory exists and
