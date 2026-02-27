@@ -11,7 +11,7 @@ to create your initial configuration in `~/.openclaw`:
 ```bash
 docker run --rm -it \
   -v ~/.openclaw:/home/node/.openclaw \
-  alpine/openclaw:latest openclaw-cli setup
+  alpine/openclaw:latest node openclaw.mjs setup
 ```
 
 The wizard asks you to choose an AI model, select a messaging channel, and generate a gateway token.
@@ -45,6 +45,8 @@ The `openclaw-cli` service runs the OpenClaw AI agent gateway.
 ```yaml
   openclaw-cli:
     image: alpine/openclaw:latest
+    entrypoint: ["node", "openclaw.mjs"]
+    command: ["gateway", "--allow-unconfigured"]
     user: "1000:1000"
     volumes:
       - ~/.openclaw:/home/node/.openclaw
@@ -163,6 +165,8 @@ services:
   # ─── openclaw-cli ─────────────────────────────────────────────────────────
   openclaw-cli:
     image: alpine/openclaw:latest
+    entrypoint: ["node", "openclaw.mjs"]
+    command: ["gateway", "--allow-unconfigured"]
     user: "1000:1000"
     volumes:
       - ~/.openclaw:/home/node/.openclaw

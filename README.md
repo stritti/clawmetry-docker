@@ -77,7 +77,7 @@ create your initial configuration in `~/.openclaw`:
 ```bash
 docker run --rm -it \
   -v ~/.openclaw:/home/node/.openclaw \
-  alpine/openclaw:latest openclaw-cli setup
+  alpine/openclaw:latest node openclaw.mjs setup
 ```
 
 Then start both services with:

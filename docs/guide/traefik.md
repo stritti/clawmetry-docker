@@ -307,7 +307,7 @@ Click **Advanced → Proceed** (Chrome) or **Accept the Risk and Continue** (Fir
 Fetch the Control UI URL and paste your gateway token into **Settings → Token**:
 
 ```bash
-docker compose exec openclaw-gateway openclaw-cli dashboard --no-open
+docker compose exec openclaw-gateway node openclaw.mjs dashboard --no-open
 ```
 
 Open the printed URL in your browser. When prompted by your browser (HTTP Basic Auth from Traefik), enter the username and password you set in Step 3. Once authenticated, you'll reach the OpenClaw Control UI — enter the gateway token from Step 1 in **Settings → Token**.

@@ -8,7 +8,7 @@ services:
   #
   #   docker run --rm -it \
   #     -v ~/.openclaw:/home/node/.openclaw \
-  #     alpine/openclaw:latest openclaw-cli setup
+  #     alpine/openclaw:latest node openclaw.mjs setup
   #
   # After onboarding, start the full stack with:
   #   docker compose up -d
@@ -17,6 +17,11 @@ services:
     # Pin to a specific version tag (e.g. alpine/openclaw:1.2.3) for reproducible
     # deployments; use "latest" for automatic updates.
     image: alpine/openclaw:latest
+
+    # Use the Node.js CLI entry point so that `docker compose run --rm openclaw-cli <cmd>`
+    # (e.g. status, setup, session list) works correctly alongside the gateway service.
+    entrypoint: ["node", "openclaw.mjs"]
+    command: ["gateway", "--allow-unconfigured"]
 
     # Run as non-root user 1000:1000 (principle of least privilege).
     # If your ~/.openclaw directory is owned by a different UID, fix it first:
