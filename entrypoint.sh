@@ -74,7 +74,7 @@ if [ -n "$FLEET_DB_PATH" ]; then
     fi
 fi
 
-echo "Starting gunicorn with gosu clawmetry..."
+echo "Dropping privileges to clawmetry user and starting gunicorn..."
 exec gosu clawmetry /venv/bin/gunicorn \
     --bind "${HOST}:${PORT}" \
     --workers 1 \
