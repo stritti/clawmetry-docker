@@ -19,6 +19,11 @@ COPY --from=builder /venv /venv
 # Create a non-root user to run the application.
 RUN useradd -m -u 1000 clawmetry
 
+# Install gosu to drop privileges safely.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gosu && \
+    rm -rf /var/lib/apt/lists/*
+
 # Create the default OpenClaw data directory so the container starts
 # without requiring a volume mount (clawmetry auto-detects ~/.openclaw).
 RUN mkdir -p /home/clawmetry/.openclaw && \
@@ -35,7 +40,15 @@ COPY wsgi.py .
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-USER clawmetry
+# SECURITY NOTE:
+# The container intentionally starts as root so that entrypoint.sh can perform any
+# required permission and ownership fixes (e.g., chown/chmod on mounted volumes)
+# before the application runs. The script is expected to call 'gosu' as early as
+# possible to drop privileges to the non-root 'clawmetry' user for the actual
+# application process.
+# This increases the attack surface if a vulnerability exists in the portion of
+# entrypoint.sh that runs before 'gosu'. Keep that logic minimal, avoid parsing
+# untrusted input there, and review any changes to entrypoint.sh carefully.
 
 EXPOSE 8900
 

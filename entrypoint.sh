@@ -31,6 +31,8 @@ while [ $# -gt 0 ]; do
             export MC_URL="$2"; shift 2 ;;
         --fleet-api-key)
             export CLAWMETRY_FLEET_KEY="$2"; shift 2 ;;
+        --fleet-db-path)
+            export FLEET_DB_PATH="$2"; shift 2 ;;
         --no-debug|--debug)
             # Debug mode is not applicable under gunicorn; silently ignore.
             shift ;;
@@ -40,7 +42,45 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-exec /venv/bin/gunicorn \
+# Ensure HOME is set correctly for the non-root user.
+export HOME="${HOME:-/home/clawmetry}"
+export OPENCLAW_HOME="${OPENCLAW_HOME:-/home/clawmetry/.openclaw}"
+
+# The container starts as root. We ensure the data directory exists and
+# has the correct permissions before dropping privileges.
+# We intentionally do NOT recurse into existing content to avoid mutating
+# host-side ownership when DATA_DIR is a bind mount where the host user's
+# UID differs from the container's 'clawmetry' user (UID 1000).
+DATA_DIR="${OPENCLAW_DATA_DIR:-/home/clawmetry/.openclaw}"
+mkdir -p "$DATA_DIR"
+# Only fix ownership when the directory is still owned by root (e.g. just
+# created above or a brand-new Docker-managed volume). This preserves the
+# original ownership on pre-existing bind mounts.
+# Safety guard: never chown '/' or an empty path.
+if [ -n "$DATA_DIR" ] && [ "$DATA_DIR" != "/" ] && \
+   [ "$(stat -c '%u' "$DATA_DIR")" = "0" ]; then
+    chown clawmetry:clawmetry "$DATA_DIR"
+fi
+
+# Also ensure the fleet DB directory exists if FLEET_DB_PATH is set.
+if [ -n "$FLEET_DB_PATH" ]; then
+    DB_DIR=$(dirname "$FLEET_DB_PATH")
+    # Normalise DB_DIR to an absolute path when FLEET_DB_PATH is relative.
+    case "$DB_DIR" in
+        /*) ;;
+        *) DB_DIR="$HOME/$DB_DIR" ;;
+    esac
+    mkdir -p "$DB_DIR"
+    # Safety guard: never chown '/' (e.g. FLEET_DB_PATH='/fleet.db')
+    # or an empty string.
+    if [ -n "$DB_DIR" ] && [ "$DB_DIR" != "/" ] && \
+       [ "$(stat -c '%u' "$DB_DIR")" = "0" ]; then
+        chown clawmetry:clawmetry "$DB_DIR"
+    fi
+fi
+
+echo "Dropping privileges to clawmetry user and starting gunicorn..."
+exec gosu clawmetry /venv/bin/gunicorn \
     --bind "${HOST}:${PORT}" \
     --workers 1 \
     --threads 16 \
