@@ -42,9 +42,9 @@ if docker compose ps --services --filter "status=running" 2>/dev/null | grep -q 
     # Pass -T when stdout is not a TTY (e.g., CI or piped output) to avoid
     # "the input device is not a TTY" errors from docker compose exec.
     if [ -t 1 ]; then
-        exec docker compose exec openclaw-cli openclaw "$@"
+        exec docker compose exec openclaw-cli node openclaw.mjs "$@"
     else
-        exec docker compose exec -T openclaw-cli openclaw "$@"
+        exec docker compose exec -T openclaw-cli node openclaw.mjs "$@"
     fi
 fi
 
@@ -63,4 +63,4 @@ fi
 
 exec docker run $docker_run_opts \
     -v "$OPENCLAW_HOME:/home/node/.openclaw" \
-    "$OPENCLAW_IMAGE" openclaw "$@"
+    "$OPENCLAW_IMAGE" node openclaw.mjs "$@"
