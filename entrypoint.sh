@@ -1,10 +1,9 @@
 #!/bin/sh
-# Start ClawMetry using gunicorn (production WSGI server) instead of
-# Flask's built-in development server.  Written in POSIX sh for maximum
-# compatibility with slim container base images.
+# Start ClawMetry directly using its built-in Waitress production server.
+# Written in POSIX sh for maximum compatibility with slim container base images.
 #
 # Accepts the same flags as the clawmetry CLI:
-#   --host / -H and --port / -p are forwarded to gunicorn's --bind.
+#   --host / -H and --port / -p are forwarded directly to clawmetry.
 #   All other documented flags are translated to the environment variables
 #   that ClawMetry already honours (OPENCLAW_DATA_DIR, OPENCLAW_HOME, …).
 
@@ -32,7 +31,7 @@ while [ $# -gt 0 ]; do
         --fleet-api-key)
             export CLAWMETRY_FLEET_KEY="$2"; shift 2 ;;
         --no-debug|--debug)
-            # Debug mode is not applicable under gunicorn; silently ignore.
+            # Always start with --no-debug (Waitress); consume any override silently.
             shift ;;
         *)
             echo "Warning: ignoring unknown argument '$1'" >&2
@@ -40,10 +39,7 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-exec /venv/bin/gunicorn \
-    --bind "${HOST}:${PORT}" \
-    --workers 1 \
-    --threads 16 \
-    --timeout 120 \
-    --capture-output \
-    wsgi:app
+exec /venv/bin/clawmetry \
+    --host "${HOST}" \
+    --port "${PORT}" \
+    --no-debug
