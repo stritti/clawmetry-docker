@@ -1,4 +1,4 @@
-# Stage 1: Build – install clawmetry + gunicorn into an isolated virtual environment
+# Stage 1: Build – install clawmetry into an isolated virtual environment
 FROM python:3.14-slim AS builder
 
 ARG CLAWMETRY_VERSION=latest
@@ -6,9 +6,9 @@ ARG CLAWMETRY_VERSION=latest
 RUN python -m venv /venv
 
 RUN if [ "$CLAWMETRY_VERSION" = "latest" ]; then \
-        /venv/bin/pip install --no-cache-dir clawmetry[otel] gunicorn; \
+        /venv/bin/pip install --no-cache-dir clawmetry[otel]; \
     else \
-        /venv/bin/pip install --no-cache-dir clawmetry[otel]==$CLAWMETRY_VERSION gunicorn; \
+        /venv/bin/pip install --no-cache-dir clawmetry[otel]==$CLAWMETRY_VERSION; \
     fi
 
 # Stage 2: Runtime – copy only the installed package, no build tools
@@ -27,11 +27,7 @@ RUN mkdir -p /home/clawmetry/.openclaw && \
 # Persist the OpenClaw workspace data outside the container.
 VOLUME ["/home/clawmetry/.openclaw"]
 
-# Application directory – gunicorn imports wsgi.py from here.
-WORKDIR /app
-COPY wsgi.py .
-
-# Entrypoint script: translates clawmetry CLI flags to gunicorn options.
+# Entrypoint script: translates clawmetry CLI flags to environment variables.
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
@@ -44,5 +40,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
 
 ENTRYPOINT ["/entrypoint.sh"]
 # --host 0.0.0.0   listen on all interfaces (required in containers)
-# --no-debug       not applicable under gunicorn; kept for backward compatibility
+# --no-debug       use Waitress (production server) instead of the Werkzeug dev server
 CMD ["--host", "0.0.0.0", "--port", "8900", "--no-debug"]
