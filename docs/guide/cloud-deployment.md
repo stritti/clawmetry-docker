@@ -117,18 +117,13 @@ These platforms all support Docker images directly.
 
 ### Railway
 
-Create a `railway.json` in your project root:
+Deploy the pre-built `stritti/clawmetry:latest` Docker image directly:
 
-```json
-{
-  "build": { "builder": "DOCKERFILE" },
-  "deploy": {
-    "startCommand": null
-  }
-}
-```
+1. In the Railway dashboard, create a new service and choose **Deploy from Docker image**.
+2. Use `stritti/clawmetry:latest` as the image name.
+3. In the service settings, set the `PORT` environment variable to `8900`.
 
-Then deploy using the `stritti/clawmetry:latest` Docker image and set the `PORT` variable to `8900` in the Railway dashboard.
+After deployment, Railway will expose a public URL for the dashboard.
 
 ### Fly.io
 
