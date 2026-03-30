@@ -58,7 +58,9 @@ services:
     # Alternatively use the GitHub Container Registry image:
     # image: ghcr.io/stritti/clawmetry-docker:latest
     ports:
-      # Map host port 8900 to container port 8900 (clawmetry web UI)
+      # Map host port 8900 to container port 8900 (clawmetry web UI).
+      # If you change OPENCLAW_DASHBOARD_PORT below, update both sides of
+      # this mapping to match — e.g. "9000:9000" when the port is 9000.
       - "8900:8900"
     volumes:
       # Mount the local OpenClaw workspace so the dashboard can read logs,
@@ -74,6 +76,10 @@ services:
       # MC_URL: "https://your-mission-control"
       # Optional: API key for multi-node fleet authentication
       # CLAWMETRY_FLEET_KEY: "your-api-key"
-      # Optional: override the listening port (default: 8900)
+      # Optional: override the listening port (default: 8900).
+      # NOTE: If you change this value you must also update the ports: mapping
+      # above so both sides match — e.g. "9000:9000" when the port is 9000.
       # OPENCLAW_DASHBOARD_PORT: "8900"
+      # Optional: override the bind address (default: 0.0.0.0 — all interfaces)
+      # OPENCLAW_DASHBOARD_HOST: "0.0.0.0"
     restart: unless-stopped

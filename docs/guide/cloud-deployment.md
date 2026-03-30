@@ -86,15 +86,26 @@ Ideal when your OpenClaw metrics are sent via OTLP.
 
 ### 1. Deploy
 
+> **⚠️ Security warning:** `--allow-unauthenticated` makes the dashboard publicly accessible on the internet — anyone with the URL can view your agent usage data, session recordings, and logs. Omit this flag and instead restrict access via [Cloud Run IAM](https://cloud.google.com/run/docs/securing/managing-access), [Identity-Aware Proxy (IAP)](https://cloud.google.com/iap/docs/enabling-cloud-run), or a private ingress setting. The example below uses authentication; remove the `--no-allow-unauthenticated` flag and add your own access policy before exposing it publicly.
+
 Use the pre-built image directly — no local build needed:
 
 ```bash
 gcloud run deploy clawmetry \
   --image stritti/clawmetry:latest \
   --region us-central1 \
-  --allow-unauthenticated \
+  --no-allow-unauthenticated \
   --port 8900 \
   --memory 512Mi
+```
+
+To allow access, grant the `roles/run.invoker` role to specific users or groups:
+
+```bash
+gcloud run services add-iam-policy-binding clawmetry \
+  --region us-central1 \
+  --member="user:you@example.com" \
+  --role="roles/run.invoker"
 ```
 
 ### 2. Send OTLP data
