@@ -74,4 +74,6 @@ services:
       # MC_URL: "https://your-mission-control"
       # Optional: API key for multi-node fleet authentication
       # CLAWMETRY_FLEET_KEY: "your-api-key"
+      # Optional: override the listening port (default: 8900)
+      # OPENCLAW_DASHBOARD_PORT: "8900"
     restart: unless-stopped

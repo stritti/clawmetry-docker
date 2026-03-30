@@ -24,6 +24,7 @@ export default defineConfig({
           { text: 'Configuration', link: '/guide/configuration' },
           { text: 'Docker Compose', link: '/guide/docker-compose' },
           { text: 'Traefik + OpenClaw', link: '/guide/traefik' },
+          { text: 'Cloud Deployment', link: '/guide/cloud-deployment' },
         ],
       },
     ],

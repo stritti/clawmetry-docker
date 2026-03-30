@@ -56,6 +56,8 @@ All CLI flags can alternatively be set via environment variables:
 | `OPENCLAW_USER` | `--name` | Your name shown in the Flow tab |
 | `MC_URL` | `--mc-url` | Mission Control URL (disabled by default) |
 | `CLAWMETRY_FLEET_KEY` | `--fleet-api-key` | API key for multi-node fleet authentication |
+| `OPENCLAW_DASHBOARD_HOST` | `--host` | Bind address (default: `0.0.0.0`) |
+| `OPENCLAW_DASHBOARD_PORT` | `--port` | Listening port (default: `8900`) |
 
 Example with environment variables:
 
@@ -118,6 +120,8 @@ Uncomment the `environment` entries to customize the instance further:
 | `OPENCLAW_USER` | `--name` | Your name shown in the Flow tab |
 | `MC_URL` | `--mc-url` | Mission Control URL (disabled by default) |
 | `CLAWMETRY_FLEET_KEY` | `--fleet-api-key` | API key for multi-node fleet authentication |
+| `OPENCLAW_DASHBOARD_HOST` | `--host` | Bind address (default: `0.0.0.0`) |
+| `OPENCLAW_DASHBOARD_PORT` | `--port` | Listening port (default: `8900`) |
 
 #### Shell wrapper for openclaw
 

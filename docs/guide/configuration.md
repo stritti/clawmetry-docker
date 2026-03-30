@@ -15,6 +15,8 @@ All CLI flags can alternatively be set via environment variables:
 | `OPENCLAW_USER` | `--name` | Your name shown in the Flow tab |
 | `MC_URL` | `--mc-url` | Mission Control URL (disabled by default) |
 | `CLAWMETRY_FLEET_KEY` | `--fleet-api-key` | API key for multi-node fleet authentication |
+| `OPENCLAW_DASHBOARD_HOST` | `--host` | Bind address (default: `0.0.0.0`) |
+| `OPENCLAW_DASHBOARD_PORT` | `--port` | Listening port (default: `8900`) |
 
 ### Variable details
 
@@ -80,6 +82,22 @@ Required when running [ClawMetry](https://clawmetry.com/) in a distributed setup
 
 ```bash
 -e CLAWMETRY_FLEET_KEY="your-api-key"
+```
+
+#### `OPENCLAW_DASHBOARD_HOST` — `--host`
+
+Network interface address the server binds to. The default (`0.0.0.0`) listens on all interfaces, which is required inside a container. Override this only if you need to restrict the bind address.
+
+```bash
+-e OPENCLAW_DASHBOARD_HOST="0.0.0.0"
+```
+
+#### `OPENCLAW_DASHBOARD_PORT` — `--port`
+
+TCP port the server listens on. Defaults to `8900`. Use this when port `8900` is already taken on the host or when the cloud platform assigns a port dynamically via its own `PORT` environment variable.
+
+```bash
+-e OPENCLAW_DASHBOARD_PORT="9000"
 ```
 
 ## Example
