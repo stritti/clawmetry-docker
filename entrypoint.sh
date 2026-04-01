@@ -7,8 +7,11 @@
 #   All other documented flags are translated to the environment variables
 #   that ClawMetry already honours (OPENCLAW_DATA_DIR, OPENCLAW_HOME, …).
 
-HOST="0.0.0.0"
-PORT="8900"
+# Honour clawmetry's own environment-variable overrides so that setting
+# OPENCLAW_DASHBOARD_PORT (or OPENCLAW_DASHBOARD_HOST) in docker-compose /
+# Cloud Run / Railway without passing CLI flags also works.
+HOST="${OPENCLAW_DASHBOARD_HOST:-0.0.0.0}"
+PORT="${OPENCLAW_DASHBOARD_PORT:-${PORT:-8900}}"
 
 while [ $# -gt 0 ]; do
     case "$1" in

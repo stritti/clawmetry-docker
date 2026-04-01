@@ -45,3 +45,7 @@ As an alternative, images are also available from the [GitHub Container Registry
 docker build -t clawmetry-docker .
 docker run -p 8900:8900 -v ~/.openclaw:/home/clawmetry/.openclaw clawmetry-docker
 ```
+
+## Deploy to the cloud
+
+See the [Cloud Deployment guide](/guide/cloud-deployment) for instructions on running ClawMetry on a VPS, Google Cloud Run, Railway, Fly.io, or in OTLP-only mode.

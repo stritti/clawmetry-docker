@@ -154,6 +154,8 @@ All environment variables supported by [ClawMetry](https://clawmetry.com/) can b
 | `OPENCLAW_USER` | `--name` | Your name shown in the Flow tab |
 | `MC_URL` | `--mc-url` | Mission Control URL (disabled by default) |
 | `CLAWMETRY_FLEET_KEY` | `--fleet-api-key` | API key for multi-node fleet authentication |
+| `OPENCLAW_DASHBOARD_HOST` | `--host` | Bind address (default: `0.0.0.0`) |
+| `OPENCLAW_DASHBOARD_PORT` | `--port` | Listening port (default: `8900`) |
 
 For detailed descriptions of each variable, see the [Configuration reference](/guide/configuration).
 
