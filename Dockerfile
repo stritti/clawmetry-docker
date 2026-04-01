@@ -39,6 +39,9 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:8900').read()" || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]
-# --host 0.0.0.0   listen on all interfaces (required in containers)
-# --no-debug       use Waitress (production server) instead of the Werkzeug dev server
-CMD ["--host", "0.0.0.0", "--port", "8900", "--no-debug"]
+# Host and port are resolved by entrypoint.sh from OPENCLAW_DASHBOARD_HOST /
+# OPENCLAW_DASHBOARD_PORT (or the platform-injected PORT), falling back to
+# 0.0.0.0:8900.  Override them here only if you need a static default that
+# cannot be set via env vars (CLI args take precedence over env vars).
+# --no-debug   use Waitress (production server) instead of the Werkzeug dev server
+CMD ["--no-debug"]
