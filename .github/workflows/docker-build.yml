@@ -18,6 +18,15 @@ env:
   GHCR_REGISTRY: ghcr.io
   DOCKERHUB_IMAGE: stritti/clawmetry
 
+# Least-privilege default; the job below adds packages: write for the GHCR push.
+permissions:
+  contents: read
+
+# Avoid duplicate concurrent builds when push, schedule and manual dispatch overlap.
+concurrency:
+  group: docker-build
+  cancel-in-progress: true
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -106,6 +115,8 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64,linux/arm64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
