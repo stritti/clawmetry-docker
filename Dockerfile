@@ -1,5 +1,5 @@
 # Stage 1: Build – install clawmetry into an isolated virtual environment
-FROM python:3.14-slim AS builder
+FROM python:3.15-slim AS builder
 
 ARG CLAWMETRY_VERSION=latest
 
@@ -12,7 +12,7 @@ RUN if [ "$CLAWMETRY_VERSION" = "latest" ]; then \
     fi
 
 # Stage 2: Runtime – copy only the installed package, no build tools
-FROM python:3.14-slim
+FROM python:3.15-slim
 
 COPY --from=builder /venv /venv
 
