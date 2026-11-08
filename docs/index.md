@@ -23,11 +23,15 @@ features:
   - title: One-command start
     details: Pull and run the pre-built image from Docker Hub — no local Python environment needed. Powered by <a href="https://clawmetry.com/" target="_blank">ClawMetry</a>.
   - title: 32 agent runtimes
-    details: Mount the home directory of whichever runtimes you use (OpenClaw, Claude Code, Codex, Gemini CLI, …) — ClawMetry auto-detects them, read-only. See the <a href="/guide/getting-started">getting started guide</a>.
+    details: Mount the home directory of whichever runtimes you use (OpenClaw, Claude Code, Codex, Gemini CLI, …) — ClawMetry auto-detects them, read-only.
+    link: /guide/getting-started
+    linkText: Getting started guide
   - title: Automatic updates
     details: A scheduled GitHub Actions workflow checks PyPI daily and publishes a fresh image for every new <a href="https://clawmetry.com/" target="_blank">ClawMetry</a> release.
   - title: Flexible configuration
-    details: All settings are configurable via environment variables or CLI flags so you can adapt the container to any workspace layout. See the <a href="/guide/configuration">configuration reference</a>.
+    details: All settings are configurable via environment variables or CLI flags so you can adapt the container to any workspace layout.
+    link: /guide/configuration
+    linkText: Configuration reference
 ---
 
 <div style="text-align:center;margin-top:1.5rem;">
