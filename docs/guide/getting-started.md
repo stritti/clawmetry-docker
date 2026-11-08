@@ -17,7 +17,7 @@ Mount your host workspace so the dashboard can read logs, sessions, memory files
 
 ```bash
 docker run -p 8900:8900 \
-  -v ~/.openclaw:/home/clawmetry/.openclaw \
+  -v ~/.openclaw:/home/clawmetry/.openclaw:ro \
   stritti/clawmetry:latest
 ```
 
@@ -43,7 +43,7 @@ As an alternative, images are also available from the [GitHub Container Registry
 
 ```bash
 docker build -t clawmetry-docker .
-docker run -p 8900:8900 -v ~/.openclaw:/home/clawmetry/.openclaw clawmetry-docker
+docker run -p 8900:8900 -v ~/.openclaw:/home/clawmetry/.openclaw:ro clawmetry-docker
 ```
 
 ## Deploy to the cloud
