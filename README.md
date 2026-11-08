@@ -4,7 +4,7 @@
 [![ClawMetry version](https://img.shields.io/pypi/v/clawmetry?label=ClawMetry)](https://pypi.org/project/clawmetry/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/stritti/clawmetry?label=Docker%20Pulls)](https://hub.docker.com/r/stritti/clawmetry)
 
-Docker Image for [ClawMetry](https://clawmetry.com/), a real-time observability and governance dashboard for AI agents. ClawMetry watches 32 AI agent runtimes — including Claude Code, OpenAI Codex, [OpenClaw](https://github.com/openclaw/openclaw) and 29 more ([full list](https://github.com/vivekchand/clawmetry/blob/main/SUPPORTED_RUNTIMES.txt)).
+Docker Image for [ClawMetry](https://clawmetry.com/), a real-time observability and governance dashboard for AI agents. ClawMetry watches 32 AI agent runtimes — including Claude Code, OpenAI Codex, [OpenClaw](https://github.com/openclaw/openclaw) and 29 more ([full list](https://github.com/vivekchand/clawmetry/blob/main/SUPPORTED_RUNTIMES.txt)). Of these, 4 (OpenClaw, NemoClaw, Goose, Qwen Code) are read by the open-source package alone; the remaining 28 require the paid `clawmetry-pro` companion ([entitlements](https://github.com/vivekchand/clawmetry/blob/main/docs/ENTITLEMENTS.md)).
 
 The image is built automatically from the latest [ClawMetry PyPI release](https://pypi.org/project/clawmetry/) and published to both [Docker Hub](https://hub.docker.com/r/stritti/clawmetry) and the [GitHub Container Registry](https://github.com/stritti/clawmetry-docker/pkgs/container/clawmetry-docker).
 
@@ -204,7 +204,7 @@ openclaw dashboard --no-open
 The same tags are published to both registries:
 
 - `latest` — latest clawmetry release
-- `x.y.z` — specific clawmetry version (e.g. `0.9.0`)
+- `x.y.z` — specific clawmetry version (e.g. `0.12.942`)
 
 **Docker Hub:** `stritti/clawmetry:<tag>`
 

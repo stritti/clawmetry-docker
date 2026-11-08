@@ -33,18 +33,12 @@ Both services share ~/.openclaw (read-only for ClawMetry)
 
 [ClawMetry](https://clawmetry.com/) reads data written by the OpenClaw gateway. Before using the Traefik compose file you need to configure OpenClaw with its interactive setup wizard.
 
-1. Clone the OpenClaw repository and enter the directory:
+1. Run the onboarding wizard with the official OpenClaw image (same command as in the [Docker Compose guide](/guide/docker-compose)):
 
    ```bash
-   git clone https://github.com/openclaw/openclaw
-   cd openclaw
-   ```
-
-2. Set the image tag and run the wizard:
-
-   ```bash
-   export OPENCLAW_IMAGE="alpine/openclaw:latest"
-   ./docker-setup.sh
+   docker run --rm -it \
+     -v ~/.openclaw:/home/node/.openclaw \
+     alpine/openclaw:latest node openclaw.mjs setup
    ```
 
    The wizard asks you to:
@@ -52,23 +46,13 @@ Both services share ~/.openclaw (read-only for ClawMetry)
    - Select a **messaging channel** (Telegram, WhatsApp, Discord, …)
    - Generate and save a **gateway token**
 
-3. Once setup is complete, stop the wizard-started containers. You will start them again via the Traefik compose file:
-
-   ```bash
-   docker compose down
-   ```
-
-4. The wizard has written your configuration to `~/.openclaw/`. Confirm it exists:
+2. The wizard has written your configuration to `~/.openclaw/`. Confirm it exists:
 
    ```bash
    ls ~/.openclaw
    ```
 
-> **Troubleshooting:** If the wizard shows no models with `latest`, switch to the `main` tag and rerun:
-> ```bash
-> export OPENCLAW_IMAGE="alpine/openclaw:main"
-> ./docker-setup.sh
-> ```
+   Afterwards you start the services via the Traefik compose file (Step 8) — no separate `docker compose down` needed, since the wizard ran in a one-off container.
 
 ## Step 2 — Create the project directory
 

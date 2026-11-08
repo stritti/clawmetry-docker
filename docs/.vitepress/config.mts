@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 
 export default defineConfig({
   title: 'clawmetry-docker',
-  description: 'Docker Image for clawmetry — real-time observability dashboard for OpenClaw AI agents.',
+  description: 'Docker Image for clawmetry — real-time observability dashboard for 32 AI agent runtimes.',
 
   base: '/clawmetry-docker/',
 

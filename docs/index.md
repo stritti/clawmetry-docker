@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: clawmetry-docker
-  text: Real-time observability for OpenClaw AI agents
-  tagline: A ready-to-use Docker image for the <a href="https://clawmetry.com/" target="_blank">ClawMetry</a> dashboard — zero Python setup required.
+  text: Real-time observability for your AI agents
+  tagline: A ready-to-use Docker image for the <a href="https://clawmetry.com/" target="_blank">ClawMetry</a> dashboard — watches 32 agent runtimes (OpenClaw, Claude Code, Codex &amp; more), zero Python setup required.
   actions:
     - theme: brand
       text: Get Started
@@ -22,6 +22,8 @@ hero:
 features:
   - title: One-command start
     details: Pull and run the pre-built image from Docker Hub — no local Python environment needed. Powered by <a href="https://clawmetry.com/" target="_blank">ClawMetry</a>.
+  - title: 32 agent runtimes
+    details: Mount the home directory of whichever runtimes you use (OpenClaw, Claude Code, Codex, Gemini CLI, …) — ClawMetry auto-detects them, read-only. See the <a href="/guide/getting-started">getting started guide</a>.
   - title: Automatic updates
     details: A scheduled GitHub Actions workflow checks PyPI daily and publishes a fresh image for every new <a href="https://clawmetry.com/" target="_blank">ClawMetry</a> release.
   - title: Flexible configuration
