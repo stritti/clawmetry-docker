@@ -11,7 +11,8 @@
 # Override defaults with environment variables:
 #   OPENCLAW_INSTALL_DIR   — directory to install the binary (default: /usr/local/bin)
 #   OPENCLAW_REPO          — GitHub repo slug (default: stritti/clawmetry-docker)
-#   OPENCLAW_BRANCH        — branch/tag to download from (default: main)
+#   OPENCLAW_BRANCH        — branch/tag to download from (default: main;
+#                            pin a release tag for a reproducible install)
 
 set -e
 
