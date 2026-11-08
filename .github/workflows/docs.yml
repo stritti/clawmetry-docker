@@ -7,16 +7,21 @@ on:
     paths:
       - 'docs/**'
       - '.github/workflows/docs.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
   workflow_dispatch:
 
+# Least-privilege default; the deploy job below adds pages: write + id-token: write.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
+# Keep main deploys in their own group so PR check runs can never cancel a
+# pending deployment; PR runs get a per-branch group and cancel stale builds.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.ref == 'refs/heads/main' && 'pages' || format('docs-check-{0}', github.head_ref) }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   build:
@@ -49,7 +54,13 @@ jobs:
 
   deploy:
     needs: build
+    # Only deploy from main (push or manual dispatch) — pull_request runs just build the docs as a check.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
