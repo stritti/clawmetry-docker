@@ -35,8 +35,10 @@ USER clawmetry
 
 EXPOSE 8900
 
+# The healthcheck honours the same port resolution as entrypoint.sh:
+# OPENCLAW_DASHBOARD_PORT, then the platform-injected PORT, then 8900.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:8900').read()" || exit 1
+    CMD python3 -c "import os, urllib.request; p = os.environ.get('OPENCLAW_DASHBOARD_PORT') or os.environ.get('PORT') or '8900'; urllib.request.urlopen(f'http://localhost:{p}').read()" || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]
 # Host and port are resolved by entrypoint.sh from OPENCLAW_DASHBOARD_HOST /
