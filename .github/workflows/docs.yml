@@ -17,9 +17,11 @@ on:
 permissions:
   contents: read
 
+# Keep main deploys in their own group so PR check runs can never cancel a
+# pending deployment; PR runs get a per-branch group and cancel stale builds.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.ref == 'refs/heads/main' && 'pages' || format('docs-check-{0}', github.head_ref) }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   build:
@@ -52,8 +54,8 @@ jobs:
 
   deploy:
     needs: build
-    # Only deploy from pushes to main — pull_request runs just build the docs as a check.
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Only deploy from main (push or manual dispatch) — pull_request runs just build the docs as a check.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
