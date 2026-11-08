@@ -16,7 +16,7 @@ Follow the [official Docker installation guide](https://docs.docker.com/engine/i
 docker run -d \
   --name clawmetry \
   -p 8900:8900 \
-  -v /path/to/openclaw/agent:/home/clawmetry/.openclaw \
+  -v /path/to/openclaw/agent:/home/clawmetry/.openclaw:ro \
   stritti/clawmetry:latest
 ```
 

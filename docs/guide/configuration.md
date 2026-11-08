@@ -15,6 +15,7 @@ All CLI flags can alternatively be set via environment variables:
 | `OPENCLAW_USER` | `--name` | Your name shown in the Flow tab |
 | `MC_URL` | `--mc-url` | Mission Control URL (disabled by default) |
 | `CLAWMETRY_FLEET_KEY` | `--fleet-api-key` | API key for multi-node fleet authentication |
+| `FLEET_DB_PATH` | — | Path to the fleet database file (fleet state, alerts, budgets) |
 | `OPENCLAW_DASHBOARD_HOST` | `--host` | Bind address (default: `0.0.0.0`) |
 | `OPENCLAW_DASHBOARD_PORT` | `--port` | Listening port (default: `8900`) |
 
@@ -84,6 +85,15 @@ Required when running [ClawMetry](https://clawmetry.com/) in a distributed setup
 -e CLAWMETRY_FLEET_KEY="your-api-key"
 ```
 
+#### `FLEET_DB_PATH` — no CLI equivalent
+
+Path to the fleet database file used for multi-node fleet state, alert deduplication and budget tracking.
+Only relevant when running ClawMetry as part of a fleet; by default the file lives inside the data directory, so set this only if you want it on a dedicated volume.
+
+```bash
+-e FLEET_DB_PATH=/data/fleet.db
+```
+
 #### `OPENCLAW_DASHBOARD_HOST` — `--host`
 
 Network interface address the server binds to. The default (`0.0.0.0`) listens on all interfaces, which is required inside a container. Override this only if you need to restrict the bind address.
@@ -105,6 +115,6 @@ TCP port the server listens on. Defaults to `8900`. Use this when port `8900` is
 ```bash
 docker run -p 8900:8900 \
   -e OPENCLAW_DATA_DIR=/home/clawmetry/.openclaw \
-  -v ~/.openclaw:/home/clawmetry/.openclaw \
+  -v ~/.openclaw:/home/clawmetry/.openclaw:ro \
   stritti/clawmetry:latest
 ```
