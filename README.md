@@ -4,7 +4,7 @@
 [![ClawMetry version](https://img.shields.io/pypi/v/clawmetry?label=ClawMetry)](https://pypi.org/project/clawmetry/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/stritti/clawmetry?label=Docker%20Pulls)](https://hub.docker.com/r/stritti/clawmetry)
 
-Docker Image for [ClawMetry](https://clawmetry.com/) — real-time observability dashboard for [OpenClaw](https://github.com/openclaw/openclaw) AI agents.
+Docker Image for [ClawMetry](https://clawmetry.com/), a real-time observability and governance dashboard for AI agents. ClawMetry watches 26 agent runtimes, including Claude Code, Cursor, OpenAI Codex, GitHub Copilot, Gemini CLI, Aider, Goose, [OpenClaw](https://github.com/openclaw/openclaw) and NVIDIA NemoClaw.
 
 The image is built automatically from the latest [ClawMetry PyPI release](https://pypi.org/project/clawmetry/) and published to both [Docker Hub](https://hub.docker.com/r/stritti/clawmetry) and the [GitHub Container Registry](https://github.com/stritti/clawmetry-docker/pkgs/container/clawmetry-docker).
 
@@ -24,16 +24,39 @@ docker run -p 8900:8900 ghcr.io/stritti/clawmetry-docker:latest
 
 Then open **http://localhost:8900** in your browser.
 
-### Mount your OpenClaw data directory (recommended)
+### Mount your agent data directories (recommended)
 
-ClawMetry auto-detects the OpenClaw workspace at `~/.openclaw` (= `/home/clawmetry/.openclaw` inside the container).
-Mount your host workspace to that path so the dashboard can read logs, sessions, memory files, and metrics:
+ClawMetry reads the session files each agent runtime already writes on your host, so mount
+the directories for whichever runtimes you use. Nothing is written back, so `:ro` is safe.
+
+OpenClaw lives at `~/.openclaw` (= `/home/clawmetry/.openclaw` inside the container):
 
 ```bash
 docker run -p 8900:8900 \
   -v ~/.openclaw:/home/clawmetry/.openclaw \
   stritti/clawmetry:latest
 ```
+
+Other runtimes use their own home directories. Mount as many as apply:
+
+```bash
+docker run -p 8900:8900 \
+  -v ~/.openclaw:/home/clawmetry/.openclaw \
+  -v ~/.claude:/home/clawmetry/.claude:ro \
+  -v ~/.codex:/home/clawmetry/.codex:ro \
+  -v ~/.gemini:/home/clawmetry/.gemini:ro \
+  -v ~/.aider:/home/clawmetry/.aider:ro \
+  stritti/clawmetry:latest
+```
+
+| Runtime | Host directory |
+|---|---|
+| OpenClaw | `~/.openclaw` |
+| Claude Code | `~/.claude` |
+| OpenAI Codex | `~/.codex` |
+| Gemini CLI | `~/.gemini` |
+| Aider | `~/.aider` |
+| GitHub Copilot | `~/.copilot` |
 
 Or pass a custom path explicitly:
 
