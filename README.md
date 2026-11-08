@@ -160,6 +160,12 @@ The included [`openclaw.sh`](openclaw.sh) wrapper lets you call any `openclaw` s
 curl -fsSL https://raw.githubusercontent.com/stritti/clawmetry-docker/main/install.sh | bash
 ```
 
+For a reproducible install, pin a release tag instead of `main`:
+
+```bash
+OPENCLAW_BRANCH=<tag> curl -fsSL https://raw.githubusercontent.com/stritti/clawmetry-docker/main/install.sh | bash
+```
+
 **Manual install:**
 
 ```bash

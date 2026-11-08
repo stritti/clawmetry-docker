@@ -64,33 +64,32 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Check if version already exists in GHCR
-        id: check_ghcr
+      - name: Check if version already exists in the registries
+        id: check
         run: |
-          IMAGE="${{ env.GHCR_REGISTRY }}/${{ github.repository }}:${{ steps.pypi.outputs.version }}"
-          if docker manifest inspect "$IMAGE" > /dev/null 2>&1; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-            echo "Image $IMAGE already exists in GHCR – skipping GHCR push."
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-            echo "Image $IMAGE not found in GHCR – will build and push."
+          GHCR_IMAGE="${{ env.GHCR_REGISTRY }}/${{ github.repository }}:${{ steps.pypi.outputs.version }}"
+          DH_IMAGE="${{ env.DOCKERHUB_IMAGE }}:${{ steps.pypi.outputs.version }}"
+          ghcr_exists=false
+          dh_exists=false
+          if docker manifest inspect "$GHCR_IMAGE" > /dev/null 2>&1; then
+            ghcr_exists=true
+            echo "Image $GHCR_IMAGE already exists in GHCR."
           fi
-
-      - name: Check if version already exists in Docker Hub
-        id: check_dockerhub
-        run: |
-          IMAGE="${{ env.DOCKERHUB_IMAGE }}:${{ steps.pypi.outputs.version }}"
-          if docker manifest inspect "$IMAGE" > /dev/null 2>&1; then
+          if docker manifest inspect "$DH_IMAGE" > /dev/null 2>&1; then
+            dh_exists=true
+            echo "Image $DH_IMAGE already exists in Docker Hub."
+          fi
+          if [ "$ghcr_exists" = true ] && [ "$dh_exists" = true ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
-            echo "Image $IMAGE already exists in Docker Hub – skipping Docker Hub push."
+            echo "Version ${{ steps.pypi.outputs.version }} already published to both registries – skipping build."
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "Image $IMAGE not found in Docker Hub – will build and push."
+            echo "Version ${{ steps.pypi.outputs.version }} missing in at least one registry – will build and push."
           fi
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        if: steps.check_ghcr.outputs.exists == 'false' || steps.check_dockerhub.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        if: steps.check.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
         uses: docker/metadata-action@v6
         with:
           images: |
@@ -101,7 +100,7 @@ jobs:
             type=raw,value=${{ steps.pypi.outputs.version }}
 
       - name: Build and push Docker image
-        if: steps.check_ghcr.outputs.exists == 'false' || steps.check_dockerhub.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        if: steps.check.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
         uses: docker/build-push-action@v7
         with:
           context: .
