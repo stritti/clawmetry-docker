@@ -16,6 +16,10 @@ on:
     - cron: '0 7 * * 1'
   workflow_dispatch:
 
+# Least-privilege default; the job below adds security-events: write for SARIF upload.
+permissions:
+  contents: read
+
 jobs:
   trivy-scan:
     name: Trivy CVE Scan
@@ -35,6 +39,8 @@ jobs:
           push: false
           load: true
           tags: clawmetry:scan
+          cache-from: type=gha
+          cache-to: type=gha
 
       - name: Run Trivy vulnerability scan on Docker image
         uses: aquasecurity/trivy-action@v0.36.0
