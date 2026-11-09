@@ -1,7 +1,27 @@
 version: 2
 updates:
-  # Keep GitHub Actions up to date — all action bumps grouped into one PR
+  # Keep GitHub Actions up to date, grouped by publisher/purpose
   - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+    open-pull-requests-limit: 5
+    groups:
+      actions-official:
+        patterns:
+          - "actions/*"
+      docker-actions:
+        patterns:
+          - "docker/*"
+      security-actions:
+        patterns:
+          - "aquasecurity/*"
+          - "github/codeql-action"
+
+  # Keep Docker images up to date: base image (Dockerfile) separate from compose services
+  - package-ecosystem: docker
     directory: /
     schedule:
       interval: weekly
@@ -9,20 +29,16 @@ updates:
       - dependencies
     open-pull-requests-limit: 3
     groups:
-      actions:
+      docker-base-image:
+        patterns:
+          - "python"
+      compose-service-images:
         patterns:
           - "*"
+        exclude-patterns:
+          - "python"
 
-  # Keep Docker base images up to date
-  - package-ecosystem: docker
-    directory: /
-    schedule:
-      interval: weekly
-    labels:
-      - dependencies
-    open-pull-requests-limit: 2
-
-  # Keep VitePress and other npm dependencies up to date — grouped into one PR
+  # Keep docs npm dependencies up to date: direct dependency separate from transitive ones
   - package-ecosystem: npm
     directory: /docs
     schedule:
@@ -31,6 +47,11 @@ updates:
       - dependencies
     open-pull-requests-limit: 3
     groups:
-      docs-dependencies:
+      docs-direct:
+        patterns:
+          - "vitepress"
+      docs-transitive:
         patterns:
           - "*"
+        exclude-patterns:
+          - "vitepress"
